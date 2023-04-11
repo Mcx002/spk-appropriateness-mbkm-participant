@@ -16,10 +16,10 @@ node_modules
 .out/
 
 # Build Directories
-.next/
-.next-dev/
-out/
-build/
+/.next/
+/.next-dev/
+/out/
+/build/
 
 # Misc
 .DS_Store
@@ -44,10 +44,4 @@ yarn-error.log*
 .firebase/
 firebase-debug.log
 
-# IDEA
-.idea
-!.idea/jsLinters/eslint.xml
-!.idea/.gitignore
-!.idea/i18nSettings.xml
-!.idea/prettier.xml
-!.idea/vcs.xml
+CHANGELOG.md

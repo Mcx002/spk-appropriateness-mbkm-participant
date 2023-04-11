@@ -1,0 +1,9 @@
+@layer utilities {
+  .moz-osx-font-smoothing {
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .webkit-font-smoothing {
+    -webkit-font-smoothing: antialiased;
+  }
+}

@@ -1,0 +1,14 @@
+@layer utilities {
+  /* For Chrome, EDGE, Opera, Others */
+  .scrollbar::-webkit-scrollbar {
+    width: 0.438rem;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #dddddd;
+  }
+}

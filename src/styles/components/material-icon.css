@@ -1,0 +1,11 @@
+@layer components {
+  .mat-icon-xs {
+    font-size: 0.75rem !important;
+  }
+  .mat-icon-sm {
+    font-size: 0.875rem !important;
+  }
+  .mat-icon-normal {
+    font-size: 1rem !important;
+  }
+}

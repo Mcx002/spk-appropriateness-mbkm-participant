@@ -1,0 +1,8 @@
+@layer base {
+  * {
+    @apply moz-osx-font-smoothing webkit-font-smoothing font-poppins;
+  }
+  body {
+    background: #fbfbfb;
+  }
+}

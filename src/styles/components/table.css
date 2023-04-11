@@ -1,0 +1,11 @@
+@layer components {
+  .table-custom th {
+    @apply select-none border-none bg-gray-200 p-4 font-normal duration-75 hover:bg-gray-300;
+  }
+  .table-custom td {
+    @apply p-4;
+  }
+  .table-custom tbody tr:not(:first-child) {
+    @apply border-t-2;
+  }
+}

@@ -1,0 +1,5 @@
+@layer utilities {
+  .hover-img-overlay {
+    @apply bg-green-box-overlay absolute top-0 right-0 bottom-0 left-0 flex h-full w-full items-center justify-center bg-fixed opacity-0 transition duration-300 ease-in-out hover:opacity-100;
+  }
+}
