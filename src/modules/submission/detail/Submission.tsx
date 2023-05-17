@@ -1,35 +1,38 @@
 import { CameraAlt, ChevronLeft, ChevronRight } from '@mui/icons-material'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ChangeEvent, FormEvent, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import Card, { CardBody, CardHead } from '@/components/Card'
 import InputComponent from '@/components/InputComponent'
 import DashboardLayout from '@/layouts/Dashboard-layout'
 import { SubmissionSteps } from '@/modules/submission/SubmissionSteps'
+import { getSubmissionFormProfileState, submissionSetProfile } from '@/reducers/submission-form'
 
 import EmptyProfile from '~/assets/icons/empty-profile.svg'
 
 const Submission = () => {
   const router = useRouter()
-  const [form, setForm] = useState({
-    nim: '',
-    fullName: '',
-    email: '',
-    startPeriod: '',
-    kelas: '',
-    activeSemester: '',
-  })
+  const submission = useSelector(getSubmissionFormProfileState)
+  const [form, setForm] = useState(submission)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.id]: e.target.value })
+    submissionSetProfile(form)
+    console.log(submission)
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(form)
-    router.push('/submission/documents')
+    // submissionSetProfile(form)
+    // router.push('/submission/documents')
   }
+
+  useEffect(() => {
+    console.log(submission)
+  }, [submission])
+
   return (
     <DashboardLayout title='Create Submission'>
       <div className='mt-[39px] grid grid-cols-1 gap-8 px-[140px]'>
@@ -65,7 +68,7 @@ const Submission = () => {
               <SubmissionSteps active={0} />
             </CardBody>
           </Card>
-          <Card className='flex-1'>
+          <Card className='h-fit flex-1'>
             <CardHead className='flex justify-between'>
               <span>Detail Mahasiswa</span>
               <span className='text-[10px] font-normal text-danger'>* Indicates required field</span>
@@ -125,8 +128,8 @@ const Submission = () => {
                     required
                     placeholder='masukan periode masuk'
                     type='number'
-                    id='startPeriod'
-                    value={form.startPeriod}
+                    id='registerPeriod'
+                    value={form.registerPeriod}
                     onChange={handleChange}
                   />
                   <InputComponent
@@ -135,8 +138,8 @@ const Submission = () => {
                     required
                     placeholder='masukan kelas'
                     type='text'
-                    id='kelas'
-                    value={form.kelas}
+                    id='class'
+                    value={form.class}
                     onChange={handleChange}
                   />
                   <InputComponent

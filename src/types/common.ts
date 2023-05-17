@@ -9,3 +9,8 @@ export type TimestampAndVersion = {
   updatedAt: number
   version: number
 }
+
+export type FileType = {
+  fileName: string
+  url?: string
+}

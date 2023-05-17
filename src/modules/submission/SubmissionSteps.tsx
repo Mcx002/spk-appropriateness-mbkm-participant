@@ -30,7 +30,7 @@ export const SubmissionSteps: FC<SubmissionStepsProps> = ({ active }) => {
           <span
             className={clsxm('font-montserrat text-sm font-bold ', active === 1 ? 'text-primary' : 'text-[#C5C5C5]')}
           >
-            Detail Mahasiswa
+            Persyaratan
           </span>
         </StepLabel>
       </Step>
