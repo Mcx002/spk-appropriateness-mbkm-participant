@@ -72,9 +72,9 @@ const Dashboard: FC = () => {
       },
     ],
     meta: {
-      limit: 5,
+      limit: 3,
       offset: 0,
-      total: 15,
+      total: 60,
       page: 1,
       pages: 1,
     },

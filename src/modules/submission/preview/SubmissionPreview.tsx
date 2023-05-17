@@ -47,13 +47,13 @@ const SubmissionPreview = () => {
         </div>
         <div className='body flex flex-row gap-8'>
           <Card className='h-fit w-[320px]'>
-            <CardHead>Step 3 of 3</CardHead>
+            <CardHead>Step 4 of 4</CardHead>
             <CardBody>
               <p className='text-xs text-[#464646]'>Lengkapi data Anda untuk mengajukan MBKM</p>
               <SubmissionSteps active={2} />
             </CardBody>
           </Card>
-          <Card className='flex-1'>
+          <Card className='h-fit flex-1'>
             <CardHead className='flex justify-between'>
               <span>Mengirim Persyaratan Pengajuan</span>
             </CardHead>
