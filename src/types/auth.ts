@@ -3,6 +3,7 @@ import { BaseResponse } from '@/types/common'
 export type Auth = {
   token: string
   refresh_token: string
+  refresh_token_lifetime: number
 }
 
 export type RegisterError = {
