@@ -1,4 +1,3 @@
-import { getCookie, setCookie } from 'cookies-next'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -9,14 +8,15 @@ import toast, { Toaster } from 'react-hot-toast'
 
 import InputComponent from '@/components/InputComponent'
 import InputPasswordComponent from '@/components/InputPasswordComponent'
-import { USER_ACCESS_TOKEN, USER_REFRESH_TOKEN } from '@/config/token'
-import { useLoginMutation, useRefreshTokenMutation } from '@/services/auth'
+import { useLoginMutation } from '@/services/auth'
 import { LoginError } from '@/types/auth'
 import { BaseResponse } from '@/types/common'
 import clsxm from '@/utils/clsxm'
 
 import BgLogin from '~/assets/icons/bg_login.png'
 import GoogleIcon from '~/assets/icons/google-login-button-icon.svg'
+import { CircularProgress } from '@mui/material'
+import { getUserSession, setTokenSession, UserRole } from '@/utils/auth'
 
 const Login: NextPage = () => {
   const router = useRouter()
@@ -44,17 +44,6 @@ const Login: NextPage = () => {
     },
   ] = useLoginMutation()
 
-  const [
-    refreshToken,
-    {
-      isLoading: refreshTokenIsLoading,
-      isSuccess: refreshTokenIsSuccess,
-      isError: refreshTokenIsError,
-      error: refreshTokenError,
-      data: refreshTokenResponse,
-    },
-  ] = useRefreshTokenMutation()
-
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.id]: e.target.value })
   }
@@ -64,8 +53,15 @@ const Login: NextPage = () => {
   }
 
   useEffect(() => {
-    if (getCookie(USER_ACCESS_TOKEN)) {
-      router.push('/dashboard')
+    const user = getUserSession()
+    if (user) {
+      console.log(user)
+      if (user.role === UserRole.Lecture) {
+        router.push('/prodi/dashboard')
+      }
+      if (user.role === UserRole.Student) {
+        router.push('/dashboard')
+      }
     }
   })
 
@@ -82,12 +78,13 @@ const Login: NextPage = () => {
     if (loginIsSuccess && loginResponse) {
       setError({ ...baseLoginError })
 
-      setCookie(USER_ACCESS_TOKEN, loginResponse.result.token)
-      setCookie(USER_REFRESH_TOKEN, loginResponse.result.refresh_token)
+      setTokenSession({
+        accessToken: loginResponse.result.token,
+        refreshToken: loginResponse.result.refresh_token,
+        refreshTokenLifetime: loginResponse.result.refresh_token_lifetime,
+      })
 
-      router.push('/dashboard')
-
-      toast.success('Login Success', { position: 'top-right' })
+      toast.success('Login Sukses')
     }
   }, [loginIsError, loginIsSuccess])
   return (
@@ -109,13 +106,13 @@ const Login: NextPage = () => {
         />
       </div>
       <div className='col-span-12 flex justify-center lg:col-span-4'>
-        <div className='w-400 w-450px rounded bg-white-card p-12 shadow-md'>
+        <div className='w-400 relative w-450px rounded bg-white-card p-12 shadow-md'>
           <div className='grid grid-cols-1 gap-6'>
             <button className='flex w-full items-center justify-center space-x-3 rounded-md bg-white py-3 font-roboto text-base font-medium shadow-md transition-colors ease-in hover:bg-gray-100'>
               <GoogleIcon className='mr-3 h-7 w-7' />
               Continue with Google
             </button>
-            <div className='relative mt-4 mb-2 flex items-center'>
+            <div className='relative mb-2 mt-4 flex items-center'>
               <div className='grow border-t border-gray-400' />
               <span className='mx-16 shrink text-sm text-gray-400'>Or</span>
               <div className='grow border-t border-gray-400' />
@@ -134,7 +131,7 @@ const Login: NextPage = () => {
                 showRequiredSymbol={false}
                 helper={error.email[0]}
                 error={error.email.length > 0}
-                className={clsxm('w-full space-x-3 rounded-lg border-gray-300 py-4 px-7 font-poppins text-sm')}
+                className={clsxm('w-full space-x-3 rounded-lg border-gray-300 px-7 py-4 font-poppins text-sm')}
                 onChange={handleChange}
                 value={form.email}
               />
@@ -147,7 +144,7 @@ const Login: NextPage = () => {
                 showRequiredSymbol={false}
                 helper={error.password[0]}
                 error={error.password.length > 0}
-                className='w-full space-x-3 rounded-lg border-gray-300 py-4 px-7 pr-14 font-poppins text-sm'
+                className='w-full space-x-3 rounded-lg border-gray-300 px-7 py-4 pr-14 font-poppins text-sm'
                 onChange={handleChange}
                 value={form.password}
               />
@@ -179,6 +176,11 @@ const Login: NextPage = () => {
               </Link>
             </div>
           </div>
+          {loginIsLoading && (
+            <div className='absolute left-0 top-0 flex !h-[100%] !w-[100%] items-center justify-center bg-white/70'>
+              <CircularProgress />
+            </div>
+          )}
         </div>
       </div>
     </div>
