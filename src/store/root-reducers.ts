@@ -1,6 +1,5 @@
 import app from '@/reducers/app'
-import submissionForm from '@/reducers/submission-form'
 
-const rootReducers = { app, submissionForm }
+const rootReducers = { app }
 
 export default rootReducers
