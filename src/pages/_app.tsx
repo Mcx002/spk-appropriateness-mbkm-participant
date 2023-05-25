@@ -14,18 +14,17 @@ const App: React.FC<AppProps> = (props) => {
   const { Component, pageProps } = props
 
   const router = useRouter()
-
   return (
     <>
-      {!authRouting.includes(router.pathname) ? (
+      {authRouting.includes(router.pathname) ? (
+        <Component {...pageProps} />
+      ) : (
         <UserAppProvider
           baseUrl={String(apiBaseUrl)}
           cookieName={USER_ACCESS_TOKEN}
         >
           <Component {...pageProps} />
         </UserAppProvider>
-      ) : (
-        <Component {...pageProps} />
       )}
     </>
   )

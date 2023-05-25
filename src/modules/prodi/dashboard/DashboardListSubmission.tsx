@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import React, { FC } from 'react'
 
 import { TableTh } from '@/components/Table'
+import clsxm from '@/utils/clsxm'
 
 type User = {
   nim: string
@@ -35,6 +36,7 @@ const DashboardListSubmission: FC<Props> = ({ data }) => {
             </TableTh>
             <TableTh>NIM</TableTh>
             <TableTh>Nama Mahasiswa</TableTh>
+            <TableTh>IPK</TableTh>
             <TableTh>Semester</TableTh>
             <TableTh>Status</TableTh>
           </tr>
@@ -47,7 +49,20 @@ const DashboardListSubmission: FC<Props> = ({ data }) => {
               <td>{val.nim}</td>
               <td>{val.name}</td>
               <td>Semester {val.semester}</td>
-              <td>{val.status.name}</td>
+              <td>
+                <div className='flex justify-center md:justify-start'>
+                  <div
+                    className={clsxm(
+                      'w-fit rounded-2xl p-2 text-center',
+                      val.status.id === 1 && 'bg-[#C9FFD5] text-[#329C70]',
+                      val.status.id === 2 && 'bg-[#FFD6D6] text-[#EF5656]',
+                      val.status.id === 3 && 'bg-[#DFF7FF] text-[#415DF3]'
+                    )}
+                  >
+                    {val.status.name}
+                  </div>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
