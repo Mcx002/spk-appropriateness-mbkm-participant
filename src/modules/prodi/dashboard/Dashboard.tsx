@@ -1,6 +1,6 @@
 import { Add, Tune } from '@mui/icons-material'
 import { DateTime } from 'luxon'
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 
 import InputComponent from '@/components/InputComponent'
 import Pagination from '@/components/Pagination'
@@ -10,78 +10,54 @@ import DashboardLayout from '@/layouts/Dashboard-layout'
 import Banner from '~/assets/icons/Banner.png'
 import FileNotFoundIcon from '~/assets/icons/file-not-found-icon.svg'
 import SearchIcon from '~/assets/icons/search-icon.svg'
+import DashboardProdiLayout from '@/layouts/Dashboard-prodi-layout'
+import clsxm from '@/utils/clsxm'
+import { useLazyGetSubmissionsQuery } from '@/services/submissions'
+import { useUpdateEffect } from 'usehooks-ts'
+import { ListMeta } from '@/types/common'
+import { SubmissionType } from '@/types/submission'
+import MyPagination from '@/components/Pagination'
 
 const Dashboard: FC = () => {
-  const data = {
-    message: '',
-    result: [
-      {
-        nim: '0619204001',
-        name: 'Muchlish Choeruddin',
-        semester: 7,
-        status: {
-          id: 3,
-          name: 'Pending',
-        },
-        createdAt: 1679820616,
-        updatedAt: 1679820616,
+  const [getSubmissions, { data: submissionsData }] = useLazyGetSubmissionsQuery()
+  const [submissions, setSubmissions] = useState<SubmissionType[]>([])
+  const [dataCount, setDataCount] = useState(0)
+
+  const [listSubmissionMeta, setListSubmissionMeta] = useState<ListMeta>({
+    limit: 10,
+    offset: 0,
+    total: 5,
+    page: 1,
+    pages: 1,
+  })
+
+  useEffect(() => {
+    getSubmissions({
+      params: {
+        limit: 10,
+        skip: 0,
       },
-      {
-        nim: '0619204001',
-        name: 'Muchlish Choeruddin',
-        semester: 7,
-        status: {
-          id: 3,
-          name: 'Pending',
-        },
-        createdAt: 1679820616,
-        updatedAt: 1679820616,
+    })
+  }, [])
+
+  useUpdateEffect(() => {
+    if (submissionsData) {
+      setSubmissions(submissionsData.result)
+      setDataCount(submissionsData.result.length)
+      setListSubmissionMeta(submissionsData.meta as ListMeta)
+    }
+  }, [submissionsData])
+
+  const handlePageClick = (event: { offset: number }) => {
+    getSubmissions({
+      params: {
+        limit: 10,
+        skip: event.offset,
       },
-      {
-        nim: '0619204001',
-        name: 'Muchlish Choeruddin',
-        semester: 7,
-        status: {
-          id: 3,
-          name: 'Pending',
-        },
-        createdAt: 1679820616,
-        updatedAt: 1679820616,
-      },
-      {
-        nim: '0619204001',
-        name: 'Muchlish Choeruddin',
-        semester: 7,
-        status: {
-          id: 3,
-          name: 'Pending',
-        },
-        createdAt: 1679820616,
-        updatedAt: 1679820616,
-      },
-      {
-        nim: '0619204001',
-        name: 'Muchlish Choeruddin',
-        semester: 7,
-        status: {
-          id: 3,
-          name: 'Pending',
-        },
-        createdAt: 1679820616,
-        updatedAt: 1679820616,
-      },
-    ],
-    meta: {
-      limit: 3,
-      offset: 0,
-      total: 60,
-      page: 1,
-      pages: 1,
-    },
+    })
   }
-  const dataCount = 1
   return (
-    <DashboardLayout title='Dashboard'>
+    <DashboardProdiLayout title='Dashboard'>
       <div className='grid w-full grid-cols-1 gap-8 px-4 pt-8 md:px-32'>
         <img
           src={Banner.src}
@@ -137,32 +113,52 @@ const Dashboard: FC = () => {
                         </TableTh>
                         <TableTh>NIM</TableTh>
                         <TableTh>Nama Mahasiswa</TableTh>
+                        <TableTh>IPK</TableTh>
                         <TableTh>Semester</TableTh>
                         <TableTh>Status</TableTh>
                       </tr>
                     </thead>
                     <tbody>
-                      {data.result.map((val, i) => (
-                        <tr key={i}>
+                      {submissions.map((val, i) => (
+                        <tr
+                          key={i}
+                          className='cursor-pointer hover:bg-gray-100 active:bg-gray-200'
+                        >
                           <td>{i + 1}</td>
-                          <td>{DateTime.fromSeconds(val.createdAt).toFormat('dd-MM-yyyy')}</td>
-                          <td>{val.nim}</td>
-                          <td>{val.name}</td>
-                          <td>{val.semester}</td>
-                          <td>{val.status.name}</td>
+                          <td>
+                            {DateTime.fromFormat(val.created_at, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                              .toFormat('dd-MM-yyyy HH:mm:ss')
+                              .toString()}
+                          </td>
+                          <td>{val.profile.nim}</td>
+                          <td>{val.profile.fullName}</td>
+                          <td>{val.grades.ipk}</td>
+                          <td>{val.profile.activeSemester}</td>
+                          <td>
+                            <div className='flex justify-center md:justify-start'>
+                              <div
+                                className={clsxm(
+                                  'w-fit rounded-2xl p-2 text-center',
+                                  val.status.id === 1 && 'bg-[#C9FFD5] text-[#329C70]',
+                                  val.status.id === 2 && 'bg-[#FFD6D6] text-[#EF5656]',
+                                  val.status.id === 3 && 'bg-[#DFF7FF] text-[#415DF3]'
+                                )}
+                              >
+                                {val.status.name}
+                              </div>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-                <Pagination
-                  total={data.meta.total}
-                  initialOffset={data.meta.offset}
-                  limit={data.meta.limit}
-                  onPageClick={(e) => {
-                    console.log(e)
-                  }}
-                />
+                <div className='flex justify-end'>
+                  <MyPagination
+                    onPageClick={handlePageClick}
+                    limit={10}
+                  />
+                </div>
               </div>
             ) : (
               <div className='mt-8 flex w-full justify-center'>
@@ -177,7 +173,7 @@ const Dashboard: FC = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </DashboardProdiLayout>
   )
 }
 

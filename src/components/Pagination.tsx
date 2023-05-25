@@ -1,41 +1,103 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 import ReactPaginate from 'react-paginate'
+import usePagination from '@mui/material/usePagination'
+import clsxm from '@/utils/clsxm'
 
 type PaginationProps = {
-  total: number
   limit: number
-  initialOffset: number
   onPageClick: (e: { offset: number }) => void
 }
+export const MyPagination: FC<PaginationProps> = ({ onPageClick, limit }) => {
+  const { items } = usePagination({
+    count: 10,
+    showFirstButton: true,
+    showLastButton: true,
+  })
 
-const Pagination: FC<PaginationProps> = ({ total, limit, initialOffset, onPageClick }) => {
-  const pageCount = Math.ceil(total / limit)
-  const initialPage = Math.ceil(initialOffset / limit)
-
-  const handlePageClick = (event: { selected: number }) => {
-    const newOffset = (event.selected * limit) % total
-
-    if (onPageClick) {
-      onPageClick({ offset: newOffset })
-    }
-  }
   return (
-    <div className='flex w-full justify-end'>
-      <ReactPaginate
-        breakLabel={<div className='btn-pagination !rounded-none'>...</div>}
-        nextLabel={<div className='btn-pagination rounded-r-xl'>{'>'}</div>}
-        className='flex flex-row items-center '
-        activeLinkClassName='btn-active'
-        pageLabelBuilder={(s) => <div className='btn-pagination min-w-[40px]'>{s}</div>}
-        onPageChange={handlePageClick}
-        initialPage={initialPage}
-        pageRangeDisplayed={2}
-        pageCount={pageCount}
-        previousLabel={<div className='btn-pagination rounded-l-xl'>{'<'}</div>}
-        renderOnZeroPageCount={null}
-      />
-    </div>
+    <nav>
+      <div className='m-0 flex list-none flex-wrap p-0 md:flex-row'>
+        {items.map(({ page, type, selected, ...item }, index) => {
+          let children = null
+
+          if (type === 'start-ellipsis' || type === 'end-ellipsis') {
+            children = <div className='btn-pagination select-none !rounded-none'>...</div>
+          } else if (type === 'page') {
+            children = (
+              <button
+                type='button'
+                className={clsxm('btn-pagination min-w-[40px]', selected && 'border-[#5852F2]')}
+                {...item}
+              >
+                {page}
+              </button>
+            )
+          } else {
+            switch (type) {
+              case 'first':
+                children = (
+                  <button
+                    type='button'
+                    className='btn-pagination rounded-l-xl'
+                    {...item}
+                  >
+                    {'<<'}
+                  </button>
+                )
+                break
+              case 'last':
+                children = (
+                  <button
+                    type='button'
+                    className='btn-pagination rounded-r-xl'
+                    {...item}
+                  >
+                    {'>>'}
+                  </button>
+                )
+                break
+              case 'previous':
+                children = (
+                  <button
+                    type='button'
+                    className='btn-pagination rounded-none'
+                    {...item}
+                  >
+                    {'<'}
+                  </button>
+                )
+                break
+              case 'next':
+                children = (
+                  <button
+                    type='button'
+                    className='btn-pagination rounded-none'
+                    {...item}
+                  >
+                    {'>'}
+                  </button>
+                )
+                break
+            }
+          }
+
+          return (
+            <li
+              key={index}
+              onClick={() => {
+                if (type === 'start-ellipsis' || type === 'end-ellipsis') {
+                  return
+                }
+                onPageClick({ offset: (page ?? 1) * limit })
+              }}
+            >
+              {children}
+            </li>
+          )
+        })}
+      </div>
+    </nav>
   )
 }
 
-export default Pagination
+export default MyPagination
