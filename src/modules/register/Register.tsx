@@ -8,7 +8,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import InputComponent from '@/components/InputComponent'
 import InputPasswordComponent from '@/components/InputPasswordComponent'
 import ListboxComponent, { convertToListboxOption, ListboxChangeEvent } from '@/components/ListboxComponent'
-import { USER_ACCESS_TOKEN, USER_REFRESH_TOKEN } from '@/config/token'
+import { USER_ACCESS_TOKEN, USER_ACCESS_TOKEN_EXPIRATION, USER_REFRESH_TOKEN } from '@/config/token'
 import { useRegisterMutation } from '@/services/auth'
 import { useLazyListFacultyQuery } from '@/services/faculty'
 import { useLazyListProgramStudyQuery } from '@/services/program-study'
@@ -16,6 +16,8 @@ import { RegisterError } from '@/types/auth'
 import { BaseResponse } from '@/types/common'
 import { Faculty, FacultyListSortBy } from '@/types/faculty'
 import { ProgramStudy } from '@/types/program-study'
+import { DateTime } from 'luxon'
+import { setTokenSession } from '@/utils/auth'
 
 const Register: NextPage = () => {
   const router = useRouter()
@@ -81,7 +83,6 @@ const Register: NextPage = () => {
 
   const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    console.log(form)
     register({ body: form })
   }
 
@@ -122,12 +123,15 @@ const Register: NextPage = () => {
     if (registerIsSuccess && registerResponse) {
       setError({ ...baseRegisterError })
 
-      setCookie(USER_ACCESS_TOKEN, registerResponse.result.token)
-      setCookie(USER_REFRESH_TOKEN, registerResponse.result.refresh_token)
+      setTokenSession({
+        accessToken: registerResponse.result.token,
+        refreshToken: registerResponse.result.refresh_token,
+        refreshTokenLifetime: registerResponse.result.refresh_token_lifetime,
+      })
 
       router.push('/dashboard')
 
-      toast.success('Register Success', { position: 'top-right' })
+      toast.success('Register Sukses', { position: 'top-right' })
     }
     if (registerIsError) {
       const err = registerError as { data: BaseResponse<RegisterError> }
