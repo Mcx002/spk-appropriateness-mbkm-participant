@@ -1,7 +1,15 @@
 export type BaseResponse<D> = {
   message: string
   result: D
-  meta: string
+  meta: unknown
+}
+
+export type ListMeta = {
+  limit: number
+  offset: number
+  total: number
+  page: number
+  pages: number
 }
 
 export type TimestampAndVersion = {
@@ -11,6 +19,15 @@ export type TimestampAndVersion = {
 }
 
 export type FileType = {
-  fileName: string
+  filename: string
   url?: string
+}
+
+export type ControlStatus = {
+  id: number
+  name: string
+}
+
+export type GetDetailRequest = {
+  xid: string
 }
