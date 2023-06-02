@@ -40,6 +40,9 @@ module.exports = {
     GMAPS_API_KEY: process.env.GMAPS_API_KEY,
     RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY,
     RECAPTCHA_SECRET_KEY: process.env.RECAPTCHA_SITE_KEY,
+
+    // DEBUG
+    IS_AUTH_DEBUG: process.env.IS_AUTH_DEBUG,
   },
 
   webpack(config, { isServer }) {
