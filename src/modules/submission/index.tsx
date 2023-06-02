@@ -1,10 +1,10 @@
 import { NextPage } from 'next'
 import React from 'react'
 
-import SubmissionPreview from './SubmissionPreview'
+import Submission from './Submission'
 
 const Page: NextPage = () => {
-  return <SubmissionPreview />
+  return <Submission />
 }
 
 export default Page
