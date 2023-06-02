@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FC, ReactNode } from 'react'
+import UploadFileIcon from '@mui/icons-material/UploadFile'
 
 import clsxm from '@/utils/clsxm'
 
@@ -22,6 +23,9 @@ export interface InputProps {
   icon?: ReactNode
   showRequiredSymbol?: boolean
   error?: boolean
+  min?: string | number
+  max?: string | number
+  step?: string
 }
 
 const InputTypeComponent: FC<InputProps> = ({ onChange, ...rest }) => {
@@ -31,6 +35,7 @@ const InputTypeComponent: FC<InputProps> = ({ onChange, ...rest }) => {
     !rest.prepend && !rest.append && 'rounded',
     rest.icon && 'pr-14',
     rest.error && 'border-danger',
+    rest.disabled && 'bg-gray-100',
   ]
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (onChange) {
@@ -81,9 +86,12 @@ const InputTypeComponent: FC<InputProps> = ({ onChange, ...rest }) => {
           />
           <label
             htmlFor={rest.id}
-            className='btn absolute right-0 top-0 h-full bg-[#999999] text-white hover:bg-[#888] active:bg-[#777]'
+            className='btn absolute right-0 top-0 h-full bg-[#999999] px-2 text-white hover:bg-[#888] active:bg-[#777] md:px-8'
           >
-            Pilih File
+            <div className='hidden md:block'>Pilih File</div>
+            <div className='block md:hidden'>
+              <UploadFileIcon />
+            </div>
           </label>
           <input
             type='text'
