@@ -51,6 +51,7 @@ export type SubmissionType = {
   xid: string
   profile: SubmissionFormProfileState
   grades: SubmissionFormGradesState
+  documents: SubmissionFormDocumentsState
   referenceLetter: string
   created_at: string
   status: ControlStatus
