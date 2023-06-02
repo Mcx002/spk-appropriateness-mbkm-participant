@@ -11,8 +11,8 @@ export type RegisterError = {
   full_name: string[]
   email: string[]
   password: string[]
-  faculty_xid: string[]
-  study_program_xid: string[]
+  faculty_id: string[]
+  study_program_id: string[]
 }
 
 export type RegisterRequest = {
@@ -21,8 +21,8 @@ export type RegisterRequest = {
     full_name: string
     email: string
     password: string
-    faculty_xid: string
-    study_program_xid: string
+    faculty_id: number
+    study_program_id: number
   }
 }
 
