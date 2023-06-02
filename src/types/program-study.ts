@@ -1,13 +1,13 @@
 import { BaseResponse, TimestampAndVersion } from '@/types/common'
 
 export interface ProgramStudy extends Readonly<TimestampAndVersion> {
-  xid: string
+  id: number
   name: string
 }
 
 export type ProgramStudyListRequest = {
   name?: any
-  faculty_xid?: string
+  faculty_id?: number
   offset: number
   limit: number
 }

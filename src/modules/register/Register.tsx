@@ -26,16 +26,16 @@ const Register: NextPage = () => {
     full_name: '',
     email: '',
     password: '',
-    faculty_xid: '',
-    study_program_xid: '',
+    faculty_id: 0,
+    study_program_id: 0,
   })
   const baseRegisterError = {
     nim: [],
     full_name: [],
     email: [],
     password: [],
-    faculty_xid: [],
-    study_program_xid: [],
+    faculty_id: [],
+    study_program_id: [],
   }
   const [error, setError] = useState<RegisterError>(baseRegisterError)
 
@@ -98,26 +98,26 @@ const Register: NextPage = () => {
   useEffect(() => {
     if (listFaculty && listFaculty.result && listFaculty.result.length > 0) {
       const data = listFaculty.result[0]
-      setForm({ ...form, faculty_xid: data.xid })
+      setForm({ ...form, faculty_id: data.id })
       setSelectedFaculty(data)
     }
     if (listProgramStudy && listProgramStudy.result && listProgramStudy.result.length > 0) {
       const data = listProgramStudy.result[0]
-      setForm({ ...form, study_program_xid: data.xid })
+      setForm({ ...form, study_program_id: data.id })
       setSelectedProgramStudy(data)
     }
   }, [listFaculty, listProgramStudy])
 
   useEffect(() => {
-    if (form.faculty_xid !== '') {
+    if (form.faculty_id !== 0) {
       getListProgramStudy({
         limit: 20,
         offset: 0,
         name: '',
-        faculty_xid: form.faculty_xid,
+        faculty_id: form.faculty_id,
       })
     }
-  }, [form.faculty_xid])
+  }, [form.faculty_id])
 
   useEffect(() => {
     if (registerIsSuccess && registerResponse) {
@@ -199,10 +199,10 @@ const Register: NextPage = () => {
         <div className='grid grid-cols-2 gap-2'>
           {!listFacultyIsFetching && listFacultyIsSuccess && listFaculty ? (
             <ListboxComponent
-              listData={convertToListboxOption<Faculty>(listFaculty?.result ?? [], 'xid', 'name')}
+              listData={convertToListboxOption<Faculty>(listFaculty?.result ?? [], 'id', 'name')}
               label='Faculty'
               required
-              id='faculty_xid'
+              id='faculty_id'
               onChange={handleChangeListbox}
             />
           ) : (
@@ -210,10 +210,10 @@ const Register: NextPage = () => {
           )}
           {!listProgramStudyIsFetching && listProgramStudyIsSuccess && listProgramStudy ? (
             <ListboxComponent
-              listData={convertToListboxOption<ProgramStudy>(listProgramStudy?.result ?? [], 'xid', 'name')}
+              listData={convertToListboxOption<ProgramStudy>(listProgramStudy?.result ?? [], 'id', 'name')}
               label='Program Study'
               required
-              id='study_program_xid'
+              id='study_program_id'
               onChange={handleChangeListbox}
             />
           ) : (

@@ -1,7 +1,7 @@
 import { BaseResponse, TimestampAndVersion } from '@/types/common'
 
 export interface Faculty extends Readonly<TimestampAndVersion> {
-  xid: string
+  id: number
   name: string
 }
 
