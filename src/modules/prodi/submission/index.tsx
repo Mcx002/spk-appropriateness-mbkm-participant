@@ -1,10 +1,9 @@
 import { NextPage } from 'next'
 import React from 'react'
-
-import SubmissionDocuments from './SubmissionDocuments'
+import SubmissionDetail from '@/modules/prodi/submission/SubmissionDetail'
 
 const Page: NextPage = () => {
-  return <SubmissionDocuments />
+  return <SubmissionDetail />
 }
 
 export default Page
