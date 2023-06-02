@@ -6,13 +6,13 @@
     @apply text-blue-600 hover:text-blue-800;
   }
   .btn-pagination {
-    @apply min-w-[40px] border border-gray-200 p-3 text-center text-sm hover:bg-gray-100 active:bg-gray-300;
+    @apply min-w-[40px] border border-gray-200 p-3 py-2 text-center text-sm hover:bg-gray-100 active:bg-gray-300;
   }
   .btn-active > .btn-pagination {
     @apply border-2 border-blue-600;
   }
   .btn {
-    @apply rounded-md py-[9px] px-9 font-montserrat text-sm font-bold duration-75;
+    @apply rounded-md px-9 py-[9px] font-montserrat text-sm font-bold duration-75;
   }
   .btn-primary-light {
     @apply border-primary text-primary hover:bg-gray-100 active:bg-gray-300;

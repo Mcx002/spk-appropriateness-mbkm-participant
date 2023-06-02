@@ -1,0 +1,6 @@
+@layer components {
+  .text-field-no-outline > input:focus {
+    border-color: transparent;
+    --tw-ring-color: transparent;
+  }
+}
