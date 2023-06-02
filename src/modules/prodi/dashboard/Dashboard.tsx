@@ -1,6 +1,6 @@
 import { Add, Tune } from '@mui/icons-material'
 import { DateTime } from 'luxon'
-import React, { FC, useEffect, useState } from 'react'
+import React, { ChangeEvent, FC, SyntheticEvent, useEffect, useState } from 'react'
 
 import InputComponent from '@/components/InputComponent'
 import Pagination from '@/components/Pagination'
@@ -17,6 +17,8 @@ import { useUpdateEffect } from 'usehooks-ts'
 import { ListMeta } from '@/types/common'
 import { SubmissionType } from '@/types/submission'
 import MyPagination from '@/components/Pagination'
+import { Autocomplete, TextField } from '@mui/material'
+import { router } from 'next/client'
 
 const Dashboard: FC = () => {
   const [getSubmissions, { data: submissionsData }] = useLazyGetSubmissionsQuery()
@@ -56,6 +58,16 @@ const Dashboard: FC = () => {
       },
     })
   }
+
+  const handleLimitChange = (event: SyntheticEvent, newInputValue: string) => {
+    getSubmissions({
+      params: {
+        limit: parseInt(newInputValue),
+        skip: listSubmissionMeta.offset,
+      },
+    })
+  }
+
   return (
     <DashboardProdiLayout title='Dashboard'>
       <div className='grid w-full grid-cols-1 gap-8 px-4 pt-8 md:px-32'>
@@ -90,10 +102,29 @@ const Dashboard: FC = () => {
                 Filter
               </button>
             </div>
-            <div className='right'>
-              <button className='btn-primary float-right px-5 py-2 font-montserrat text-xs font-bold'>
-                <Add className='mat-icon-normal' /> Pengajuan MBKM
-              </button>
+            <div className='right flex flex-row items-center gap-5'>
+              <span>Show</span>
+              <Autocomplete
+                disablePortal
+                freeSolo
+                id='combo-box-demo'
+                className='!w-[80px] text-sm'
+                disableClearable={true}
+                options={['5', '10', '15']}
+                getOptionLabel={(option) => option.toString() || ''}
+                onInputChange={handleLimitChange}
+                sx={{ width: 300 }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    InputProps={{
+                      ...params.InputProps,
+                      type: 'number',
+                      className: 'px-1 !py-0 text-field-no-outline',
+                    }}
+                  />
+                )}
+              />
             </div>
           </div>
           <div className='w-full overflow-hidden rounded text-sm'>
@@ -123,6 +154,7 @@ const Dashboard: FC = () => {
                         <tr
                           key={i}
                           className='cursor-pointer hover:bg-gray-100 active:bg-gray-200'
+                          onClick={() => router.push(`/prodi/submission/${val.xid}`)}
                         >
                           <td>{i + 1}</td>
                           <td>
