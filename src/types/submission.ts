@@ -1,6 +1,6 @@
-import { BaseResponse, ControlStatus, FileType } from './common'
 import { ProgramStudy } from '@/types/program-study'
-import { Status } from '@jest/test-result'
+
+import { BaseData, BaseResponse, ControlStatus, FileType } from './common'
 
 export type SubmissionFormProfileState = {
   avatar: FileType
@@ -10,7 +10,7 @@ export type SubmissionFormProfileState = {
   registerPeriod: string
   class: string
   activeSemester: string
-  prodi: Pick<ProgramStudy, 'xid' | 'name'>
+  prodi: Pick<ProgramStudy, 'id' | 'name'>
 }
 
 export type SubmissionFormGradesState = {
@@ -81,6 +81,70 @@ export type SubmissionDocumentResponse = {
 export type GetSubmissionRequest = {
   params: {
     limit: number
-    skip: number
+    offset: number
+    order: string
   }
+}
+export interface IdName {
+  id: number
+  name: string
+}
+
+export interface ApprovedBy extends IdName {
+  reason: string
+}
+export interface GetSubmissionResponse extends BaseData {
+  created_by: IdName
+  updated_by?: IdName
+  deleted_by?: IdName
+  period_id: number
+  student_id: number
+  entry_period: string
+  semester: number
+  class: string
+  learning_achievement: string
+  ipk: number
+  total_sks: number
+  achievement: number
+  rpl: number
+  jarkom: number
+  sistem_operasi: number
+  basis_data: number
+  pengembangan_aplikasi_web: number
+  status: SUBMISSION_STATUS_ENUM
+  approved_by: ApprovedBy
+  approved_at: string
+  student: number
+}
+export interface GetDetailSubmissionDocumentResponse {
+  name: string
+  url: string
+  path: string
+  context: string
+  size: number
+}
+export interface GetDetailSubmissionResponse {
+  detail: GetSubmissionResponse
+  documents: GetDetailSubmissionDocumentResponse[]
+}
+export enum SUBMISSION_STATUS_ENUM {
+  NEW = 'NEW',
+  SUBMITTED = 'SUBMITTED',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export const getSubmissionStatusName = (status: SUBMISSION_STATUS_ENUM) => {
+  switch (status) {
+    case SUBMISSION_STATUS_ENUM.APPROVED:
+      return 'Diterima'
+    case SUBMISSION_STATUS_ENUM.REJECTED:
+      return 'Ditolak'
+    case SUBMISSION_STATUS_ENUM.SUBMITTED:
+      return 'Proses Review'
+    case SUBMISSION_STATUS_ENUM.NEW:
+      return 'Draft'
+  }
+
+  return ''
 }

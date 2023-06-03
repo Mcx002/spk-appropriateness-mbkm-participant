@@ -53,10 +53,10 @@ const api = createApi({
       }),
       providesTags: ['Submissions'],
     }),
-    getSubmissions: builder.query<BaseResponse<SubmissionType[]>, GetSubmissionRequest>({
+    getSubmissions: builder.query<BaseResponse<GetSubmissionResponse[]>, GetSubmissionRequest>({
       query: (data) => ({
         method: 'GET',
-        url: 'http://localhost:3001/submissions',
+        url: '/submission/my-submissions',
         params: data.params,
       }),
       providesTags: ['Submissions'],

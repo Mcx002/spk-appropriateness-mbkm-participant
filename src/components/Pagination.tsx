@@ -6,10 +6,11 @@ import clsxm from '@/utils/clsxm'
 type PaginationProps = {
   limit: number
   onPageClick: (e: { offset: number }) => void
+  pages: number
 }
-export const MyPagination: FC<PaginationProps> = ({ onPageClick, limit }) => {
+export const MyPagination: FC<PaginationProps> = ({ onPageClick, limit, pages }) => {
   const { items } = usePagination({
-    count: 10,
+    count: pages,
     showFirstButton: true,
     showLastButton: true,
   })
@@ -88,7 +89,7 @@ export const MyPagination: FC<PaginationProps> = ({ onPageClick, limit }) => {
                 if (type === 'start-ellipsis' || type === 'end-ellipsis') {
                   return
                 }
-                onPageClick({ offset: (page ?? 1) * limit })
+                onPageClick({ offset: ((page ?? 1) - 1) * limit })
               }}
             >
               {children}
