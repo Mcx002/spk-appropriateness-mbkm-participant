@@ -1,5 +1,6 @@
-import { DateTime } from 'luxon'
 import { getCookie, setCookie } from 'cookies-next'
+import { DateTime } from 'luxon'
+
 import { USER_ACCESS_TOKEN, USER_ACCESS_TOKEN_EXPIRATION, USER_REFRESH_TOKEN } from '@/config/token'
 import { decodeJwtToken } from '@/utils/jwt'
 
@@ -11,11 +12,13 @@ export type TokenSession = {
 
 export enum UserRole {
   Student = 'STUDENT',
-  Lecture = 'KAPRODI',
+  Lecture = 'LECTURE',
 }
 
 export type UserSession = {
   name: string
+  email: string
+  nim: string
   role: UserRole
 }
 
@@ -26,7 +29,7 @@ const toUserRole = (role: string) => {
   switch (role) {
     case 'STUDENT':
       return UserRole.Student
-    case 'KAPRODI':
+    case 'LECTURE':
       return UserRole.Lecture
   }
 
@@ -44,9 +47,10 @@ export const getUserSession = (): UserSession | null => {
     return null
   }
   const { payload } = decodeJwtToken(cdata as string)
-
   return {
-    name: payload.full_name,
+    name: payload.name,
+    email: payload.email,
+    nim: payload.additional_info.identifier_id,
     role: toUserRole(payload.user_type),
   }
 }
