@@ -105,18 +105,9 @@ const Login: NextPage = () => {
           alt=''
         />
       </div>
-      <div className='col-span-12 flex justify-center lg:col-span-4'>
-        <div className='w-400 relative w-450px rounded bg-white-card p-12 shadow-md'>
+      <div className='col-span-12 flex items-center justify-center lg:col-span-4'>
+        <div className='relative h-fit rounded bg-white-card p-12 shadow-md'>
           <div className='grid grid-cols-1 gap-6'>
-            <button className='flex w-full items-center justify-center space-x-3 rounded-md bg-white py-3 font-roboto text-base font-medium shadow-md transition-colors ease-in hover:bg-gray-100'>
-              <GoogleIcon className='mr-3 h-7 w-7' />
-              Continue with Google
-            </button>
-            <div className='relative mb-2 mt-4 flex items-center'>
-              <div className='grow border-t border-gray-400' />
-              <span className='mx-16 shrink text-sm text-gray-400'>Or</span>
-              <div className='grow border-t border-gray-400' />
-            </div>
             <form
               className='grid grid-cols-1 gap-6'
               onSubmit={handleLogin}
@@ -148,22 +139,6 @@ const Login: NextPage = () => {
                 onChange={handleChange}
                 value={form.password}
               />
-              <ReCAPTCHA sitekey='6LcpAUUlAAAAADRjGeq3HlghDuoDJHvJ2SCEXAhk' />
-              <div className='full-width flex justify-between'>
-                <div className='flex items-center gap-2 text-sm text-black/40'>
-                  <input
-                    type='checkbox'
-                    className='rounded-sm'
-                  />{' '}
-                  Ingat saya
-                </div>
-                <a
-                  href='#'
-                  className='text-sm text-black/40'
-                >
-                  Forgot Password?
-                </a>
-              </div>
               <button className='btn-primary relative flex w-full items-center justify-center text-base'>Masuk</button>
             </form>
             <div className='text-sm text-gray-500/80'>
