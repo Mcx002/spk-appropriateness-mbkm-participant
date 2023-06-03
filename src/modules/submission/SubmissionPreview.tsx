@@ -4,218 +4,176 @@ import { CircularProgress } from '@mui/material'
 import Link from 'next/link'
 import { FC, MouseEvent, useEffect, useState } from 'react'
 
-import { useCreateSubmissionMutation, useLazyGetMyDocumentsQuery } from '@/services/submissions'
-import { SubmissionDocumentsState, SubmissionFormState } from '@/types/submission'
+import { useLazyGetSubmissionDetailQuery, useSubmitSubmissionMutation } from '@/services/submissions'
+import { GetDetailSubmissionResponse } from '@/types/submission'
+import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined'
 
 import TimeFast from '~/assets/icons/Icon_Time Fast.svg'
 import InputComponent from '@/components/InputComponent'
 import { useRouter } from 'next/router'
+import { toast } from 'react-hot-toast'
 
 type SubmissionPreviewProps = {
-  form: SubmissionFormState
-  documents: SubmissionDocumentsState
+  handleSetPage: (num: number) => void
+  submissionId: number
 }
 
-const SubmissionPreview: FC<SubmissionPreviewProps> = ({ form, documents }) => {
+const SubmissionPreview: FC<SubmissionPreviewProps> = ({ handleSetPage, submissionId }) => {
   const router = useRouter()
-  const profile = form.profile
+  const [preview, setPreview] = useState<GetDetailSubmissionResponse | null>(null)
   const [isOpen, setIsOpen] = useState(false)
-  const [frs, setFrs] = useState({
-    filename: '',
-    url: '',
-  })
-  const [transcript, setTrancript] = useState({
-    filename: '',
-    url: '',
-  })
+  const [getSubmissionDetail, { data: submissionDetail }] = useLazyGetSubmissionDetailQuery()
   const [
-    getMyDocuments,
-    {
-      // isLoading: isGetMyDocumentLoading,
-      // isError: isGetMyDocumentError,
-      data: dataMyDocuments,
-      error: errorMyDocuments,
-    },
-  ] = useLazyGetMyDocumentsQuery()
-  const [
-    createSubmission,
-    {
-      isSuccess: isCreateSubmissionSuccess,
-      isError: isCreateSubmissionError,
-      data: createSubmissionData,
-      error: createSubmissionError,
-      isLoading: isCreateSubmissionLoading,
-    },
-  ] = useCreateSubmissionMutation()
+    submitSubmission,
+    { isSuccess: submitSubmissionSuccess, error: submitSubmissionError, isLoading: submitSubmissionLoading },
+  ] = useSubmitSubmissionMutation()
 
   useEffect(() => {
     window.addEventListener('beforeunload', alertUser)
 
-    getMyDocuments({})
+    if (submissionId) {
+      getSubmissionDetail({ xid: submissionId.toString() })
+    }
 
     return () => {
       window.removeEventListener('beforeunload', alertUser)
     }
   }, [])
 
+  useEffect(() => {
+    if (submissionDetail) {
+      setPreview(submissionDetail.result)
+    }
+  }, [submissionDetail])
+
+  useEffect(() => {
+    if (submitSubmissionSuccess) {
+      setIsOpen(true)
+    }
+    if (submitSubmissionError) {
+      toast.error('Failed to submit the submission. see console for more further')
+      console.log(submitSubmissionError)
+    }
+  }, [submitSubmissionSuccess, submitSubmissionError])
+
   const alertUser = (e: BeforeUnloadEvent) => {
     e.preventDefault()
     e.returnValue = ''
   }
 
-  useEffect(() => {
-    if (dataMyDocuments) {
-      for (const res of dataMyDocuments.result) {
-        if (res.filename === 'frs.pdf') {
-          setFrs(res)
-        }
-        if (res.filename === 'transcript.pdf') {
-          setTrancript(res)
-        }
-      }
-    }
-  }, [dataMyDocuments])
-
-  useEffect(() => {
-    if (errorMyDocuments) {
-      console.log(errorMyDocuments)
-    }
-  }, [errorMyDocuments])
-
-  useEffect(() => {
-    if (isCreateSubmissionSuccess && createSubmissionData) {
-      router.push('/dashboard')
-    }
-  }, [isCreateSubmissionSuccess, createSubmissionData])
-
-  useEffect(() => {
-    if (isCreateSubmissionError && createSubmissionError) {
-      console.log(createSubmissionError)
-    }
-  }, [isCreateSubmissionError, createSubmissionError])
-
   const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    createSubmission(form)
-    setIsOpen(false)
+    if (!submissionId) {
+      toast.error('Submission Id is not found')
+      return
+    }
+    const formData = new FormData()
+    formData.append('id', submissionId.toString())
+
+    submitSubmission(formData)
   }
   return (
     <>
       <div className='body grid grid-cols-1 gap-5 p-6'>
-        <h1 className='font-poppins font-bold text-primary'>Preview</h1>
-        <div className='grid grid-cols-3 gap-2 text-xs leading-[22px] text-[#464646]'>
-          <span className='title font-semibold'>NIM</span>
-          <span className='value col-span-2'>{profile.nim}</span>
-          <span className='title font-semibold'>Nama Lengkap</span>
-          <span className='value col-span-2'>{profile.fullName}</span>
-          <span className='title font-semibold'>Email Widyatama</span>
-          <span className='value col-span-2'>{profile.email}</span>
-          <span className='title font-semibold'>Program Studi</span>
-          <span className='value col-span-2'>{profile.prodi.name}</span>
-          <span className='title font-semibold'>Periode Masuk</span>
-          <span className='value col-span-2'>{profile.registerPeriod}</span>
-          <span className='title font-semibold'>Kelas</span>
-          <span className='value col-span-2'>{profile.class}</span>
-          <span className='title font-semibold'>Semester Aktif</span>
-          <span className='value col-span-2'>Semester {profile.activeSemester}</span>
+        <div className='flex flex-row justify-between'>
+          <h1 className='font-poppins font-bold text-primary'>Preview</h1>
+          <button
+            className='flex items-center gap-2 text-xs text-blue-500'
+            onClick={() => handleSetPage(0)}
+          >
+            <CreateOutlinedIcon className='!h-[18px] !w-[18px]' /> Edit
+          </button>
         </div>
-        <h1 className='font-poppins font-bold text-primary'>Persyaratan</h1>
-        <div className='grid grid-cols-1 gap-4 text-xs text-[#464646] md:grid-cols-2'>
-          <div className='grid grid-cols-3 gap-2'>
-            <span className='col-span-2 font-bold'>IPK</span>
-            <span>{form.grades.ipk}</span>
+        {preview && (
+          <div className='grid grid-cols-3 gap-2 text-xs leading-[22px] text-[#464646]'>
+            <span className='title font-semibold'>NIM</span>
+            <span className='value col-span-2'>#TODO: nim</span>
+            <span className='title font-semibold'>Nama Lengkap</span>
+            <span className='value col-span-2'>#TODO: name</span>
+            <span className='title font-semibold'>Email Widyatama</span>
+            <span className='value col-span-2'>#TODO: email</span>
+            <span className='title font-semibold'>Program Studi</span>
+            <span className='value col-span-2'>#TODO: Prodi</span>
+            <span className='title font-semibold'>Periode Masuk</span>
+            <span className='value col-span-2'>{preview.detail.entry_period}</span>
+            <span className='title font-semibold'>Kelas</span>
+            <span className='value col-span-2'>{preview.detail.class}</span>
+            <span className='title font-semibold'>Semester Aktif</span>
+            <span className='value col-span-2'>Semester {preview.detail.semester}</span>
           </div>
-          <div className='grid grid-cols-3 gap-2'>
-            <span className='col-span-2 font-bold'>Total SKS</span>
-            <span>{form.grades.sks} SKS</span>
-          </div>
-          <div className='grid grid-cols-3 gap-2'>
-            <span className='col-span-2 font-bold'>Nilai Rekayasa Perangkat Lunak</span>
-            <span>{form.grades.se}</span>
-          </div>
-          <div className='grid grid-cols-3 gap-2'>
-            <span className='col-span-2 font-bold'>Nilai Sistem Operasi</span>
-            <span>{form.grades.so}</span>
-          </div>
-          <div className='grid grid-cols-3 gap-2'>
-            <span className='col-span-2 font-bold'>Nilai Jaringan Komputer</span>
-            <span>{form.grades.nc}</span>
-          </div>
-          <div className='grid grid-cols-3 gap-2'>
-            <span className='col-span-2 font-bold'>Nilai Basis Data</span>
-            <span>{form.grades.db}</span>
-          </div>
-          <div className='grid grid-cols-3 gap-2'>
-            <span className='col-span-2 font-bold'>Nilai Pengembangan Aplikasi Berbasis Web</span>
-            <span>{form.grades.web}</span>
-          </div>
+        )}
+        <div className='flex flex-row justify-between'>
+          <h1 className='font-poppins font-bold text-primary'>Persyaratan</h1>
+          <button
+            className='flex items-center gap-2 text-xs text-blue-500'
+            onClick={() => handleSetPage(1)}
+          >
+            <CreateOutlinedIcon className='!h-[18px] !w-[18px]' /> Edit
+          </button>
         </div>
-        <InputComponent
-          className='h-min-[200px] w-full rounded border-[#DFDFDF] text-sm text-[#464646]'
-          label='Kesesuaian Capaian Pembelajaran'
-          showRequiredSymbol={false}
-          disabled={true}
-          placeholder='Tambahkan detail deskripsi pekerjaan'
-          type='textarea'
-          id='jobdesc'
-          value={form.grades.jobdesc}
-        />
+        {preview && (
+          <div className='grid grid-cols-1 gap-4 text-xs text-[#464646] md:grid-cols-2'>
+            <div className='grid grid-cols-3 gap-2'>
+              <span className='col-span-2 font-bold'>IPK</span>
+              <span>{preview.detail.ipk}</span>
+            </div>
+            <div className='grid grid-cols-3 gap-2'>
+              <span className='col-span-2 font-bold'>Total SKS</span>
+              <span>{preview.detail.total_sks} SKS</span>
+            </div>
+            <div className='grid grid-cols-3 gap-2'>
+              <span className='col-span-2 font-bold'>Nilai Rekayasa Perangkat Lunak</span>
+              <span>{preview.detail.rpl}</span>
+            </div>
+            <div className='grid grid-cols-3 gap-2'>
+              <span className='col-span-2 font-bold'>Nilai Sistem Operasi</span>
+              <span>{preview.detail.sistem_operasi}</span>
+            </div>
+            <div className='grid grid-cols-3 gap-2'>
+              <span className='col-span-2 font-bold'>Nilai Jaringan Komputer</span>
+              <span>{preview.detail.jarkom}</span>
+            </div>
+            <div className='grid grid-cols-3 gap-2'>
+              <span className='col-span-2 font-bold'>Nilai Basis Data</span>
+              <span>{preview.detail.basis_data}</span>
+            </div>
+            <div className='grid grid-cols-3 gap-2'>
+              <span className='col-span-2 font-bold'>Nilai Pengembangan Aplikasi Berbasis Web</span>
+              <span>{preview.detail.pengembangan_aplikasi_web}</span>
+            </div>
+          </div>
+        )}
+        {preview && (
+          <InputComponent
+            className='h-min-[200px] w-full rounded border-[#DFDFDF] text-sm text-[#464646]'
+            label='Kesesuaian Capaian Pembelajaran'
+            showRequiredSymbol={false}
+            disabled={true}
+            placeholder='Tambahkan detail deskripsi pekerjaan'
+            type='textarea'
+            id='jobdesc'
+            value={preview.detail.learning_achievement}
+          />
+        )}
         <h1 className='font-poppins font-bold text-primary'>Preview Dokumen</h1>
         <div className='grid grid-cols-1 gap-[11px]'>
-          <div className='relative flex flex-row items-center gap-5 rounded-xl border p-2 px-7 text-[#464646]'>
-            <Description className='text-[#767676]' />
-            <span className='flex-1'>{frs.filename}</span>
-            <a
-              href={frs.url}
-              target='_blank'
-              className='btn btn-primary-light border px-4 text-xs md:px-9 md:text-sm'
-            >
-              Cek Detail
-            </a>
-            {frs.url === '' && (
-              <div className='!absolute flex !h-[100%] !w-[100%] items-center justify-center bg-white/70'>
-                <CircularProgress sx={{ color: '#ddd' }} />
-              </div>
-            )}
-          </div>
-          <div className='relative flex flex-row items-center gap-5 rounded-xl border p-2 px-7 text-[#464646]'>
-            <Description className='text-[#767676]' />
-            <span className='flex-1'>{transcript.filename}</span>
-            <a
-              href={transcript.url}
-              target='_blank'
-              className='btn btn-primary-light border px-4 text-xs md:px-9 md:text-sm'
-            >
-              Cek Detail
-            </a>
-            {transcript.url === '' && (
-              <div className='!absolute flex !h-[100%] !w-[100%] items-center justify-center bg-white/70'>
-                <CircularProgress sx={{ color: '#ddd' }} />
-              </div>
-            )}
-          </div>
-          {(frs.url === '' || transcript.url === '') && errorMyDocuments && (
-            <div className='text-danger'>
-              Failed to get documents.
-              <a
-                href='#'
-                onClick={() => getMyDocuments({})}
-                className='text-blue-500'
+          {preview &&
+            preview.documents.map((val, i) => (
+              <div
+                key={i}
+                className='relative flex flex-row items-center gap-5 rounded-xl border p-2 px-7 text-[#464646]'
               >
-                Try Again
-              </a>
-            </div>
-          )}
-          {/* <div className='flex flex-row items-center gap-5 rounded-xl border p-2 px-7 text-[#464646]'>
-            <Description className='text-[#767676]' />
-            <span className='flex-1'>History Pembayaran.pdf</span>
-            <Link
-              href=''
-              className='btn btn-primary-light border'
-            >
-              Cek Detail
-            </Link>
-          </div> */}
+                <Description className='text-[#767676]' />
+                <span className='flex-1'>{val.name}</span>
+                <a
+                  href={val.url}
+                  target='_blank'
+                  className='btn btn-primary-light border px-4 text-xs md:px-9 md:text-sm'
+                >
+                  Cek Detail
+                </a>
+              </div>
+            ))}
         </div>
         <div className='action mt-[20px] flex flex-col justify-between md:flex-row'>
           <div className='flex flex-row items-center gap-3'>
@@ -233,9 +191,7 @@ const SubmissionPreview: FC<SubmissionPreviewProps> = ({ form, documents }) => {
             </Link>
             <button
               className='btn btn-primary border'
-              onClick={() => {
-                setIsOpen(true)
-              }}
+              onClick={handleSubmit}
             >
               Kirim
             </button>
@@ -244,9 +200,11 @@ const SubmissionPreview: FC<SubmissionPreviewProps> = ({ form, documents }) => {
       </div>
       <Dialog
         open={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={() => {
+          return
+        }}
       >
-        <div className='fixed inset-0 flex items-center justify-center p-4'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
           <div
             className='fixed inset-0 bg-black/30'
             aria-hidden='true'
@@ -264,7 +222,7 @@ const SubmissionPreview: FC<SubmissionPreviewProps> = ({ form, documents }) => {
                 </Dialog.Description>
 
                 <button
-                  onClick={handleSubmit}
+                  onClick={() => router.push('/dashboard')}
                   className='btn btn-primary'
                 >
                   OK
@@ -274,7 +232,7 @@ const SubmissionPreview: FC<SubmissionPreviewProps> = ({ form, documents }) => {
           </div>
         </div>
       </Dialog>
-      {isCreateSubmissionLoading && (
+      {submitSubmissionLoading && (
         <div className='fixed left-0 top-0 flex h-[100vh] w-[100vw] items-center justify-center bg-white/70'>
           <CircularProgress />
         </div>

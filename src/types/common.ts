@@ -31,3 +31,17 @@ export type ControlStatus = {
 export type GetDetailRequest = {
   xid: string
 }
+
+export interface BaseData {
+  id: number
+  created_at: string
+  updated_at: string
+  deleted_at?: string
+}
+
+export interface CommonError {
+  status: string
+  data: {
+    message: string
+  }
+}

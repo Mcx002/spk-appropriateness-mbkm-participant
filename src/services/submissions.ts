@@ -2,7 +2,9 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 import {
   CreateSubmissionRequest,
+  GetDetailSubmissionResponse,
   GetSubmissionRequest,
+  GetSubmissionResponse,
   SubmissionDocumentResponse,
   SubmissionResponse,
   SubmissionType,
@@ -31,7 +33,7 @@ const api = createApi({
     uploadFrs: builder.mutation<SubmissionResponse, FormData>({
       query: (body) => ({
         method: 'POST',
-        url: '/submission/upload/frs',
+        url: '/documents/upload-frs',
         body,
       }),
       invalidatesTags: ['Submissions'],
@@ -40,7 +42,7 @@ const api = createApi({
       query: (body) => {
         return {
           method: 'POST',
-          url: '/submission/upload/transcript',
+          url: '/documents/upload-transcript',
           body,
         }
       },
@@ -61,11 +63,41 @@ const api = createApi({
       }),
       providesTags: ['Submissions'],
     }),
-    getSumbissionDetail: builder.query<BaseResponse<SubmissionType>, GetDetailRequest>({
+    getSubmissionDetail: builder.query<BaseResponse<GetDetailSubmissionResponse>, GetDetailRequest>({
       query: (data) => ({
         method: 'GET',
-        url: `http://localhost:3001/submissions/${data.xid}`,
+        url: `/submission/detail/${data.xid}`,
       }),
+    }),
+    saveSubmissionProfile: builder.mutation<BaseResponse<GetSubmissionResponse>, FormData>({
+      query: (body) => {
+        return {
+          method: 'POST',
+          url: '/submission/save-basic-data',
+          body,
+        }
+      },
+      invalidatesTags: ['Submissions'],
+    }),
+    saveSubmissionGrade: builder.mutation<BaseResponse<GetSubmissionResponse>, FormData>({
+      query: (body) => {
+        return {
+          method: 'POST',
+          url: '/submission/save-grade',
+          body,
+        }
+      },
+      invalidatesTags: ['Submissions'],
+    }),
+    submitSubmission: builder.mutation<BaseResponse<GetSubmissionResponse>, FormData>({
+      query: (body) => {
+        return {
+          method: 'POST',
+          url: '/submission/submit',
+          body,
+        }
+      },
+      invalidatesTags: ['Submissions'],
     }),
   }),
 })
@@ -76,7 +108,10 @@ export const {
   useUploadTranscriptMutation,
   useLazyGetMyDocumentsQuery,
   useLazyGetSubmissionsQuery,
-  useGetSumbissionDetailQuery,
+  useLazyGetSubmissionDetailQuery,
+  useSaveSubmissionProfileMutation,
+  useSaveSubmissionGradeMutation,
+  useSubmitSubmissionMutation,
 } = api
 
 export default api

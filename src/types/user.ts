@@ -5,6 +5,6 @@ export type User = {
   nim: string
   fullName: string
   email: string
-  faculty: Pick<Faculty, 'xid' | 'name'>
-  studyProgram: Pick<ProgramStudy, 'xid' | 'name'>
+  faculty: Pick<Faculty, 'id' | 'name'>
+  studyProgram: Pick<ProgramStudy, 'id' | 'name'>
 }

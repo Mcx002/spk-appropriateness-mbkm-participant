@@ -3,6 +3,7 @@ import faculty from '@/services/faculty'
 import programStudy from '@/services/program-study'
 import submissions from '@/services/submissions'
 import users from '@/services/user'
+import period from '@/services/period'
 
 const rootServices = {
   reducers: {
@@ -16,6 +17,8 @@ const rootServices = {
     [submissions.reducerPath]: submissions.reducer,
     // user
     [users.reducerPath]: users.reducer,
+    // user
+    [period.reducerPath]: period.reducer,
   },
   middlewares: [
     // auth
@@ -26,6 +29,7 @@ const rootServices = {
     programStudy.middleware,
     // submission
     submissions.middleware,
+    period.middleware,
     // user
     users.middleware,
   ],

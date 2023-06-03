@@ -4,51 +4,32 @@ import { useRouter } from 'next/router'
 import { ChangeEvent, useEffect, useState } from 'react'
 
 import Card, { CardBody, CardHead } from '@/components/Card'
-import DashboardLayout from '@/layouts/Dashboard-layout'
 import { SubmissionSteps } from '@/modules/submission/SubmissionSteps'
-import { SubmissionDocumentsState, SubmissionFormState } from '@/types/submission'
+import { SubmissionDocumentsState } from '@/types/submission'
 
 import SubmissionDocuments from './SubmissionDocuments'
 import SubmissionPreview from './SubmissionPreview'
 import SubmissionProfile from './SubmissionProfile'
-import { useGetProfileQuery } from '@/services/user'
+import DashboardStudentLayout from '@/layouts/Dashboard-student-layout'
 
 const Submission = () => {
   const router = useRouter()
-  const [form, setForm] = useState<SubmissionFormState>({
-    profile: {
-      avatar: {
-        filename: '',
-      },
-      nim: '',
-      fullName: '',
-      email: '',
-      registerPeriod: '',
-      class: '',
-      activeSemester: '',
-      prodi: {
-        xid: '',
-        name: '',
-      },
-    },
-    grades: {
-      se: 0,
-      so: 0,
-      nc: 0,
-      db: 0,
-      web: 0,
-      jobdesc: '',
-      ipk: 0,
-      sks: 0,
-    },
-  })
-  const { data: profileData } = useGetProfileQuery()
+  const id = parseInt(router.query.xid as string) ?? null
+  const [submissionId, setSubmissionId] = useState<number | null>(id)
 
   const [documents, setDocuments] = useState<SubmissionDocumentsState>({
     avatar: null,
   })
 
   const [page, setPage] = useState(0)
+
+  useEffect(() => {
+    console.log(submissionId)
+  }, [])
+
+  function handleSetSubmissionId(id: number) {
+    setSubmissionId(id)
+  }
 
   function handleSetPage(num: number) {
     setPage(num)
@@ -65,26 +46,6 @@ const Submission = () => {
     }
   }
 
-  function handleChangeProfile(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setForm({
-      ...form,
-      profile: {
-        ...form.profile,
-        [e.target.id]: e.target.value,
-      },
-    })
-  }
-
-  function handleChangeGrades(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setForm({
-      ...form,
-      grades: {
-        ...form.grades,
-        [e.target.id]: e.target.value,
-      },
-    })
-  }
-
   function handleBackRoute() {
     switch (page) {
       case 0:
@@ -99,24 +60,8 @@ const Submission = () => {
     }
   }
 
-  useEffect(() => {
-    if (profileData) {
-      const profile = profileData.result
-      setForm({
-        ...form,
-        profile: {
-          ...form.profile,
-          fullName: profile.fullName,
-          nim: profile.nim,
-          email: profile.email,
-          prodi: profile.studyProgram,
-        },
-      })
-    }
-  }, [profileData])
-
   return (
-    <DashboardLayout title='Create Submission'>
+    <DashboardStudentLayout title='Create Submission'>
       <div className='mt-[39px] grid grid-cols-1 gap-8 px-0 md:px-[140px]'>
         <div className='header flex flex-row gap-2'>
           <div
@@ -159,21 +104,17 @@ const Submission = () => {
               {page === 0 ? (
                 <SubmissionProfile
                   handleSetPage={handleSetPage}
-                  handleChangeProfile={handleChangeProfile}
-                  form={form.profile}
-                  handleSetDocuments={handleSetDocuments}
-                  documents={documents}
+                  submissionId={id}
                 />
               ) : page === 1 ? (
                 <SubmissionDocuments
                   handleSetPage={handleSetPage}
-                  handleChangeGrades={handleChangeGrades}
-                  form={form.grades}
+                  submissionId={id}
                 />
               ) : page === 2 ? (
                 <SubmissionPreview
-                  form={form}
-                  documents={documents}
+                  handleSetPage={handleSetPage}
+                  submissionId={id}
                 />
               ) : (
                 ''
@@ -182,7 +123,7 @@ const Submission = () => {
           </Card>
         </div>
       </div>
-    </DashboardLayout>
+    </DashboardStudentLayout>
   )
 }
 
