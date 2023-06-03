@@ -3,16 +3,22 @@ import DashboardLayout from '@/layouts/Dashboard-layout'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 import Link from 'next/link'
 import Card, { CardBody, CardHead } from '@/components/Card'
-import { useGetSumbissionDetailQuery } from '@/services/submissions'
+import { useLazyGetSubmissionDetailQuery } from '@/services/submissions'
 import { useEffect, useState } from 'react'
-import { SubmissionType } from '@/types/submission'
+import { GetDetailSubmissionResponse, SUBMISSION_STATUS_ENUM } from '@/types/submission'
 import SubmissionDetailPreview from '@/modules/submission/detail/SubmissionDetailPreview'
+import { CommonError } from '@/types/common'
+import DashboardStudentLayout from '@/layouts/Dashboard-student-layout'
 
 export const SubmissionDetail = () => {
   const router = useRouter()
-  const [submission, setSubmission] = useState<SubmissionType | null>(null)
+  const [submission, setSubmission] = useState<GetDetailSubmissionResponse | null>(null)
   const xid = router.query.xid as string
-  const { data } = useGetSumbissionDetailQuery({ xid })
+  const [getSubmissionDetail, { data, error }] = useLazyGetSubmissionDetailQuery()
+
+  useEffect(() => {
+    getSubmissionDetail({ xid })
+  }, [])
 
   useEffect(() => {
     if (data) {
@@ -23,9 +29,9 @@ export const SubmissionDetail = () => {
   const handleBackRoute = () => {
     router.back()
   }
-  return submission ? (
-    <DashboardLayout title='Create Submission'>
-      <div className='mt-[39px] grid grid-cols-1 gap-8 px-0 md:px-[140px]'>
+  return (
+    <DashboardStudentLayout title='Create Submission'>
+      <div className='mb-[50px] mt-[39px] grid grid-cols-1 gap-8 px-0 md:px-[140px]'>
         <div className='header flex flex-row gap-2'>
           <div
             onClick={handleBackRoute}
@@ -56,28 +62,28 @@ export const SubmissionDetail = () => {
               <span>Detail Mahasiswa</span>
             </CardHead>
             <CardBody className='body grid grid-cols-1 gap-6 p-6'>
-              {submission.status.id === 1 ? (
-                <SubmissionDetailPreview data={submission} />
-              ) : submission.status.id === 2 ? (
-                <div className='rounded border border-[#949494] p-16'>
-                  Data yang Anda kirimkan kurang memenuhi syarat untuk mengikuti proses tahapan MBKM
-                  <br />
-                  Coba lagi dilain kesempatan, semoga sukses.
-                </div>
-              ) : submission.status.id === 3 ? (
-                <div className='rounded border border-[#949494] p-16'>
-                  Data yang Anda kirimkan sedang dalam proses pengecekan.
-                </div>
-              ) : (
-                'loading...'
-              )}
+              {submission &&
+                (submission.detail.status == SUBMISSION_STATUS_ENUM.APPROVED ? (
+                  <SubmissionDetailPreview data={submission} />
+                ) : submission.detail.status == SUBMISSION_STATUS_ENUM.REJECTED ? (
+                  <div className='rounded border border-[#949494] p-16'>
+                    Data yang Anda kirimkan kurang memenuhi syarat untuk mengikuti proses tahapan MBKM
+                    <br />
+                    Coba lagi dilain kesempatan, semoga sukses.
+                  </div>
+                ) : submission.detail.status == SUBMISSION_STATUS_ENUM.SUBMITTED ? (
+                  <div className='rounded border border-[#949494] p-16'>
+                    Data yang Anda kirimkan sedang dalam proses pengecekan.
+                  </div>
+                ) : (
+                  'loading...'
+                ))}
+              {error && <div>{(error as CommonError).data.message}</div>}
             </CardBody>
           </Card>
         </div>
       </div>
-    </DashboardLayout>
-  ) : (
-    <>loading...</>
+    </DashboardStudentLayout>
   )
 }
 
