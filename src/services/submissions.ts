@@ -1,13 +1,13 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
 
 import {
   CreateSubmissionRequest,
   GetDetailSubmissionResponse,
+  GetMySubmissionRequest,
   GetSubmissionRequest,
   GetSubmissionResponse,
   SubmissionDocumentResponse,
   SubmissionResponse,
-  SubmissionType,
 } from '@/types/submission'
 import { EmptyObject } from '@reduxjs/toolkit'
 import { BaseResponse, GetDetailRequest } from '@/types/common'
@@ -55,7 +55,7 @@ const api = createApi({
       }),
       providesTags: ['Submissions'],
     }),
-    getSubmissions: builder.query<BaseResponse<GetSubmissionResponse[]>, GetSubmissionRequest>({
+    getMySubmissions: builder.query<BaseResponse<GetSubmissionResponse[]>, GetMySubmissionRequest>({
       query: (data) => ({
         method: 'GET',
         url: '/submission/my-submissions',
@@ -99,6 +99,14 @@ const api = createApi({
       },
       invalidatesTags: ['Submissions'],
     }),
+    getSubmissions: builder.query<BaseResponse<GetSubmissionResponse[]>, GetSubmissionRequest>({
+      query: (data) => ({
+        method: 'GET',
+        url: '/submission',
+        params: data.params,
+      }),
+      providesTags: ['Submissions'],
+    }),
   }),
 })
 
@@ -107,11 +115,12 @@ export const {
   useUploadFrsMutation,
   useUploadTranscriptMutation,
   useLazyGetMyDocumentsQuery,
-  useLazyGetSubmissionsQuery,
+  useLazyGetMySubmissionsQuery,
   useLazyGetSubmissionDetailQuery,
   useSaveSubmissionProfileMutation,
   useSaveSubmissionGradeMutation,
   useSubmitSubmissionMutation,
+  useLazyGetSubmissionsQuery,
 } = api
 
 export default api
