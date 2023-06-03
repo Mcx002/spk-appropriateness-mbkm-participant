@@ -7,7 +7,7 @@ import { TableTh } from '@/components/Table'
 
 import Banner from '~/assets/icons/Banner.png'
 import FileNotFoundIcon from '~/assets/icons/file-not-found-icon.svg'
-import { useLazyGetSubmissionsQuery } from '@/services/submissions'
+import { useLazyGetMySubmissionsQuery } from '@/services/submissions'
 import { GetSubmissionResponse, getSubmissionStatusName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
 import { useUpdateEffect } from 'usehooks-ts'
 import clsxm from '@/utils/clsxm'
@@ -19,7 +19,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import DashboardStudentLayout from '@/layouts/Dashboard-student-layout'
 
 const Dashboard: FC = () => {
-  const [getSubmissions, { data: submissionsData }] = useLazyGetSubmissionsQuery()
+  const [getSubmissions, { data: submissionsData }] = useLazyGetMySubmissionsQuery()
   const [submissions, setSubmissions] = useState<GetSubmissionResponse[]>([])
   const [dataCount, setDataCount] = useState(0)
   const limit = 10

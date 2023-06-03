@@ -78,7 +78,7 @@ export type SubmissionDocumentResponse = {
   last_modified: string
 }
 
-export type GetSubmissionRequest = {
+export type GetMySubmissionRequest = {
   params: {
     limit: number
     offset: number
@@ -114,7 +114,7 @@ export interface GetSubmissionResponse extends BaseData {
   status: SUBMISSION_STATUS_ENUM
   approved_by: ApprovedBy
   approved_at: string
-  student: number
+  student: StudentDto
 }
 export interface GetDetailSubmissionDocumentResponse {
   name: string
@@ -147,4 +147,29 @@ export const getSubmissionStatusName = (status: SUBMISSION_STATUS_ENUM) => {
   }
 
   return ''
+}
+
+export type GetSubmissionRequest = {
+  params: {
+    limit: number
+    offset: number
+    order: string
+    period_id: number
+    keyword?: string
+  }
+}
+
+export interface StudentDto extends BaseData {
+  nim: number
+  name: string
+  email: string
+  study_program_id: number
+  studyProgram: StudyProgramDto
+}
+
+export interface StudyProgramDto {
+  id: number
+  name: string
+  faculty_id: number
+  is_active: boolean
 }
