@@ -4,25 +4,25 @@ import Link from 'next/link'
 import React, { FC, useEffect, useState } from 'react'
 
 import { TableTh } from '@/components/Table'
-import DashboardLayout from '@/layouts/Dashboard-layout'
 
 import Banner from '~/assets/icons/Banner.png'
 import FileNotFoundIcon from '~/assets/icons/file-not-found-icon.svg'
 import { useLazyGetSubmissionsQuery } from '@/services/submissions'
-import { SubmissionType } from '@/types/submission'
+import { GetSubmissionResponse, getSubmissionStatusName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
 import { useUpdateEffect } from 'usehooks-ts'
 import clsxm from '@/utils/clsxm'
-import ReactPaginate from 'react-paginate'
 import { ListMeta } from '@/types/common'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
 import MyPagination from '@/components/Pagination'
-import { getUserSession } from '@/utils/auth'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import DashboardStudentLayout from '@/layouts/Dashboard-student-layout'
 
 const Dashboard: FC = () => {
   const [getSubmissions, { data: submissionsData }] = useLazyGetSubmissionsQuery()
-  const [submissions, setSubmissions] = useState<SubmissionType[]>([])
+  const [submissions, setSubmissions] = useState<GetSubmissionResponse[]>([])
   const [dataCount, setDataCount] = useState(0)
+  const limit = 10
 
   const [listSubmissionMeta, setListSubmissionMeta] = useState<ListMeta>({
     limit: 10,
@@ -35,8 +35,9 @@ const Dashboard: FC = () => {
   useEffect(() => {
     getSubmissions({
       params: {
-        limit: 10,
-        skip: 0,
+        limit: limit,
+        offset: 0,
+        order: 'created_at|desc',
       },
     })
   }, [])
@@ -52,14 +53,15 @@ const Dashboard: FC = () => {
   const handlePageClick = (event: { offset: number }) => {
     getSubmissions({
       params: {
-        limit: 10,
-        skip: event.offset,
+        limit: limit,
+        offset: event.offset,
+        order: 'created_at|desc',
       },
     })
   }
 
   return (
-    <DashboardLayout title='Dashboard'>
+    <DashboardStudentLayout title='Dashboard'>
       <div className='mb-[100px] grid w-full grid-cols-1 gap-8 px-4 pt-8 md:px-32'>
         <img
           src={Banner.src}
@@ -110,36 +112,46 @@ const Dashboard: FC = () => {
                               .toFormat('dd-MM-yyyy HH:mm:ss')
                               .toString()}
                           </td>
-                          <td>Semester {val.profile.activeSemester}</td>
+                          <td>Semester {val.semester}</td>
                           <td className='align-middle'>
                             <div className='flex justify-center md:justify-start'>
                               <div
                                 className={clsxm(
                                   'w-fit rounded-2xl p-2 text-center',
-                                  val.status.id === 1 && 'bg-[#C9FFD5] text-[#329C70]',
-                                  val.status.id === 2 && 'bg-[#FFD6D6] text-[#EF5656]',
-                                  val.status.id === 3 && 'bg-[#DFF7FF] text-[#415DF3]'
+                                  val.status === SUBMISSION_STATUS_ENUM.APPROVED && 'bg-[#C9FFD5] text-[#329C70]',
+                                  val.status === SUBMISSION_STATUS_ENUM.REJECTED && 'bg-[#FFD6D6] text-[#EF5656]',
+                                  val.status === SUBMISSION_STATUS_ENUM.SUBMITTED && 'bg-[#DFF7FF] text-[#415DF3]'
                                 )}
                               >
-                                {val.status.name}
+                                {getSubmissionStatusName(val.status)}
                               </div>
                             </div>
                           </td>
                           <td className='flex items-center justify-center gap-2'>
-                            <Link
-                              href={`/submission/${val.xid}`}
-                              className='text-[#006BCD]'
-                            >
-                              <VisibilityOutlinedIcon />
-                            </Link>
-                            {val.status.id === 1 && (
+                            {val.status !== SUBMISSION_STATUS_ENUM.NEW && (
+                              <Link
+                                href={`/submission/${val.id}`}
+                                className='text-[#006BCD]'
+                              >
+                                <VisibilityOutlinedIcon />
+                              </Link>
+                            )}
+                            {val.status === SUBMISSION_STATUS_ENUM.APPROVED && (
                               <a
-                                href={val.referenceLetter}
+                                href={'#TODO:implement-recomendation-letter'}
                                 target='_blank'
                                 className='text-[#3EAB84]'
                               >
                                 <FileDownloadOutlinedIcon />
                               </a>
+                            )}
+                            {val.status === SUBMISSION_STATUS_ENUM.NEW && (
+                              <Link
+                                href={`/submission/${val.id}/edit`}
+                                className='text-[#006BCD]'
+                              >
+                                <EditOutlinedIcon />
+                              </Link>
                             )}
                           </td>
                         </tr>
@@ -147,12 +159,15 @@ const Dashboard: FC = () => {
                     </tbody>
                   </table>
                 </div>
-                <div className='flex justify-end'>
-                  <MyPagination
-                    onPageClick={handlePageClick}
-                    limit={10}
-                  />
-                </div>
+                {listSubmissionMeta.pages > 1 && (
+                  <div className='flex justify-end'>
+                    <MyPagination
+                      onPageClick={handlePageClick}
+                      limit={limit}
+                      pages={listSubmissionMeta.pages}
+                    />
+                  </div>
+                )}
               </div>
             ) : (
               <div className='mt-8 flex w-full justify-center'>
@@ -168,7 +183,7 @@ const Dashboard: FC = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </DashboardStudentLayout>
   )
 }
 
