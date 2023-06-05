@@ -17,15 +17,7 @@ const Submission = () => {
   const id = parseInt(router.query.xid as string) ?? null
   const [submissionId, setSubmissionId] = useState<number | null>(id)
 
-  const [documents, setDocuments] = useState<SubmissionDocumentsState>({
-    avatar: null,
-  })
-
   const [page, setPage] = useState(0)
-
-  useEffect(() => {
-    console.log(submissionId)
-  }, [])
 
   function handleSetSubmissionId(id: number) {
     setSubmissionId(id)
@@ -33,17 +25,6 @@ const Submission = () => {
 
   function handleSetPage(num: number) {
     setPage(num)
-  }
-
-  function handleSetDocuments(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const e = event as ChangeEvent<HTMLInputElement>
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0]
-      setDocuments({
-        ...documents,
-        [e.target.id]: file,
-      })
-    }
   }
 
   function handleBackRoute() {
@@ -104,17 +85,18 @@ const Submission = () => {
               {page === 0 ? (
                 <SubmissionProfile
                   handleSetPage={handleSetPage}
-                  submissionId={id}
+                  submissionId={submissionId ?? undefined}
+                  handleSetSubmissionId={handleSetSubmissionId}
                 />
               ) : page === 1 ? (
                 <SubmissionDocuments
                   handleSetPage={handleSetPage}
-                  submissionId={id}
+                  submissionId={submissionId ?? 0}
                 />
               ) : page === 2 ? (
                 <SubmissionPreview
                   handleSetPage={handleSetPage}
-                  submissionId={id}
+                  submissionId={submissionId ?? 0}
                 />
               ) : (
                 ''
