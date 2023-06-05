@@ -6,7 +6,7 @@
     "postinstall": "is-ci || husky install",
     "dev": "next dev -p 3009",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3009",
     "export": "next export",
     "clean": "rimraf --no-glob ./.next ./.next-dev ./out ./.firebase",
     "lint": "next lint",
