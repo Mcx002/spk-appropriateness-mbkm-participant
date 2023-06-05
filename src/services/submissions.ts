@@ -107,6 +107,14 @@ const api = createApi({
       }),
       providesTags: ['Submissions'],
     }),
+    proceedSubmission: builder.mutation<BaseResponse<GetSubmissionResponse>, FormData>({
+      query: (formData) => ({
+        method: 'POST',
+        url: '/submission/approval',
+        body: formData,
+      }),
+      invalidatesTags: ['Submissions'],
+    }),
   }),
 })
 
@@ -121,6 +129,7 @@ export const {
   useSaveSubmissionGradeMutation,
   useSubmitSubmissionMutation,
   useLazyGetSubmissionsQuery,
+  useProceedSubmissionMutation,
 } = api
 
 export default api
