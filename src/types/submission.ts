@@ -156,6 +156,7 @@ export type GetSubmissionRequest = {
     order: string
     period_id: number
     keyword?: string
+    status?: string
   }
 }
 
