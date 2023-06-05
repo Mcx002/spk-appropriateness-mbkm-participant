@@ -3,23 +3,28 @@ import DashboardLayout from '@/layouts/Dashboard-layout'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 import Link from 'next/link'
 import Card, { CardBody, CardHead } from '@/components/Card'
-import { useGetSumbissionDetailQuery } from '@/services/submissions'
 import { useEffect, useState } from 'react'
-import { SubmissionType } from '@/types/submission'
-import SubmissionDetailPreview from '@/modules/prodi/submission/SubmissionDetailPreview'
-import SubmissionDetailApprovalForm from '@/modules/prodi/submission/SubmissionDetailApprovalForm'
+import { GetDetailSubmissionResponse, SUBMISSION_STATUS_ENUM } from '@/types/submission'
+import SubmissionDetailPreview from '@/modules/prodi/submission/detail/SubmissionDetailPreview'
+import SubmissionDetailApprovalForm from '@/modules/prodi/submission/detail/SubmissionDetailApprovalForm'
+import { useLazyGetSubmissionDetailQuery } from '@/services/submissions'
 
 export const SubmissionDetail = () => {
   const router = useRouter()
-  const [submission, setSubmission] = useState<SubmissionType | null>(null)
-  const xid = router.query.xid as string
-  const { data } = useGetSumbissionDetailQuery({ xid })
+  const [submission, setSubmission] = useState<GetDetailSubmissionResponse | null>(null)
+  const xid = router.query.submissionId as string
+  const periodId = router.query.periodId as string
+  const [getSubmissionDetail, { data: submissionDetail }] = useLazyGetSubmissionDetailQuery()
 
   useEffect(() => {
-    if (data) {
-      setSubmission(data.result)
+    getSubmissionDetail({ xid })
+  }, [])
+
+  useEffect(() => {
+    if (submissionDetail) {
+      setSubmission(submissionDetail.result)
     }
-  }, [data])
+  }, [submissionDetail])
 
   const handleBackRoute = () => {
     router.back()
@@ -36,16 +41,23 @@ export const SubmissionDetail = () => {
           </div>
           <div className='mt-1 flex flex-1 flex-col gap-2'>
             <div className='flex flex-row items-center justify-between'>
-              <h1 className='font-montserrat text-[24px] font-bold'>Form Pengajuan</h1>
+              <h1 className='font-montserrat text-[24px] font-bold'>Detil Pengajuan</h1>
               <div className='breadcrumb hidden flex-row items-center gap-[9px] font-poppins font-bold md:flex'>
                 <Link
                   className='link'
-                  href='/dashboard'
+                  href='/prodi/dashboard'
                 >
                   Beranda
                 </Link>
                 <ChevronRight className='text-lg' />
-                <span className='text-[#A3A3A3]'>Form Pengajuan</span>
+                <Link
+                  className='link'
+                  href={`/prodi/period/${periodId}`}
+                >
+                  Daftar Pengajuan
+                </Link>
+                <ChevronRight className='text-lg' />
+                <span className='text-[#A3A3A3]'>Detil Pengajuan</span>
               </div>
             </div>
             <hr />
@@ -57,11 +69,11 @@ export const SubmissionDetail = () => {
               <span>Detail Mahasiswa</span>
             </CardHead>
             <CardBody className='body grid grid-cols-1 gap-6 p-6'>
-              {submission.status.id === 1 ? (
+              {submission.detail.status === SUBMISSION_STATUS_ENUM.APPROVED ? (
                 <SubmissionDetailPreview data={submission} />
-              ) : submission.status.id === 2 ? (
+              ) : submission.detail.status === SUBMISSION_STATUS_ENUM.REJECTED ? (
                 <div className='rounded border border-[#949494] p-16'>Pengajuan ini telah anda tolak</div>
-              ) : submission.status.id === 3 ? (
+              ) : submission.detail.status === SUBMISSION_STATUS_ENUM.SUBMITTED ? (
                 <SubmissionDetailApprovalForm data={submission} />
               ) : (
                 'loading...'
@@ -72,7 +84,7 @@ export const SubmissionDetail = () => {
       </div>
     </DashboardLayout>
   ) : (
-    <>loading...</>
+    <div className='flex h-[100vh] w-[100vw] items-center justify-center'>loading...</div>
   )
 }
 

@@ -1,9 +1,10 @@
 import { NextPage } from 'next'
 import React from 'react'
-import SubmissionDetail from '@/modules/prodi/submission/SubmissionDetail'
 
-const Page: NextPage = () => {
-  return <SubmissionDetail />
+import SubmissionList from '@/modules/prodi/submission/SubmissionList'
+
+const Index: NextPage = () => {
+  return <SubmissionList />
 }
 
-export default Page
+export default Index
