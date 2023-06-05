@@ -28,13 +28,13 @@ export interface InputProps {
   step?: string
 }
 
-const InputTypeComponent: FC<InputProps> = ({ onChange, ...rest }) => {
+const InputTypeComponent: FC<InputProps> = ({ onChange, error, ...rest }) => {
   const conditionalInputClass = [
     rest.prepend && ' rounded-none rounded-r-xl',
     rest.append && ' rounded-none rounded-l',
     !rest.prepend && !rest.append && 'rounded',
     rest.icon && 'pr-14',
-    rest.error && 'border-danger',
+    error && 'border-danger',
     rest.disabled && 'bg-gray-100',
   ]
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -106,7 +106,6 @@ const InputTypeComponent: FC<InputProps> = ({ onChange, ...rest }) => {
           />
         </div>
       )
-
     default:
       return (
         <input
@@ -125,7 +124,13 @@ const InputTypeComponent: FC<InputProps> = ({ onChange, ...rest }) => {
       )
   }
 }
-const InputComponent: FC<InputProps> = ({ classNameDiv, labelClassName, showRequiredSymbol = true, ...rest }) => {
+const InputComponent: FC<InputProps> = ({
+  classNameDiv,
+  error,
+  labelClassName,
+  showRequiredSymbol = true,
+  ...rest
+}) => {
   return (
     <div className={clsxm('block space-y-2', classNameDiv)}>
       {rest.label && (
@@ -154,7 +159,7 @@ const InputComponent: FC<InputProps> = ({ classNameDiv, labelClassName, showRequ
           </span>
         )}
       </div>
-      {rest.helper && <p className={clsxm('text-xs text-gray-400', rest.error && 'text-danger')}>{rest.helper}</p>}
+      {rest.helper && <p className={clsxm('text-xs text-gray-400', error && 'text-danger')}>{rest.helper}</p>}
     </div>
   )
 }
