@@ -49,7 +49,7 @@ export const TableTh: FC<TableThProps> = ({ children, order = true, onClick }) =
       className={clsxm(order && onClick && 'cursor-pointer')}
     >
       <div className='flex flex-row items-center justify-between'>
-        <span>{children}</span>
+        <div className='w-[100%]'>{children}</div>
         {order && onClick && (
           <div className='relative flex h-6 w-6 flex-col'>
             <ArrowDropUp
