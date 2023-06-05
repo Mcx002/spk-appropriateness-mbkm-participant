@@ -43,5 +43,6 @@ export interface CommonError {
   status: string
   data: {
     message: string
+    result: unknown
   }
 }
