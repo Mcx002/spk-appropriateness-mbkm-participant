@@ -87,13 +87,13 @@ const SubmissionPreview: FC<SubmissionPreviewProps> = ({ handleSetPage, submissi
         {preview && (
           <div className='grid grid-cols-3 gap-2 text-xs leading-[22px] text-[#464646]'>
             <span className='title font-semibold'>NIM</span>
-            <span className='value col-span-2'>#TODO: nim</span>
+            <span className='value col-span-2'>{preview.detail.student.nim}</span>
             <span className='title font-semibold'>Nama Lengkap</span>
-            <span className='value col-span-2'>#TODO: name</span>
+            <span className='value col-span-2'>{preview.detail.student.name}</span>
             <span className='title font-semibold'>Email Widyatama</span>
-            <span className='value col-span-2'>#TODO: email</span>
+            <span className='value col-span-2'>{preview.detail.student.email}</span>
             <span className='title font-semibold'>Program Studi</span>
-            <span className='value col-span-2'>#TODO: Prodi</span>
+            <span className='value col-span-2'>{preview.detail.student.studyProgram.name}</span>
             <span className='title font-semibold'>Periode Masuk</span>
             <span className='value col-span-2'>{preview.detail.entry_period}</span>
             <span className='title font-semibold'>Kelas</span>

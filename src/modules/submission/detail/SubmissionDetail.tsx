@@ -41,7 +41,7 @@ export const SubmissionDetail = () => {
           </div>
           <div className='mt-1 flex flex-1 flex-col gap-2'>
             <div className='flex flex-row items-center justify-between'>
-              <h1 className='font-montserrat text-[24px] font-bold'>Form Pengajuan</h1>
+              <h1 className='font-montserrat text-[24px] font-bold'>Detil Pengajuan</h1>
               <div className='breadcrumb hidden flex-row items-center gap-[9px] font-poppins font-bold md:flex'>
                 <Link
                   className='link'
@@ -50,7 +50,7 @@ export const SubmissionDetail = () => {
                   Beranda
                 </Link>
                 <ChevronRight className='text-lg' />
-                <span className='text-[#A3A3A3]'>Form Pengajuan</span>
+                <span className='text-[#A3A3A3]'>Detil Pengajuan</span>
               </div>
             </div>
             <hr />
@@ -70,6 +70,12 @@ export const SubmissionDetail = () => {
                     Data yang Anda kirimkan kurang memenuhi syarat untuk mengikuti proses tahapan MBKM
                     <br />
                     Coba lagi dilain kesempatan, semoga sukses.
+                    <br />
+                    <br />
+                    Alasan: {submission.detail.approved_by.reason}
+                    <br />
+                    <br />
+                    {submission.detail.approved_by.name}
                   </div>
                 ) : submission.detail.status == SUBMISSION_STATUS_ENUM.SUBMITTED ? (
                   <div className='rounded border border-[#949494] p-16'>

@@ -107,6 +107,12 @@ const SubmissionDetailPreview: FC<Props> = ({ data }) => {
         id='jobdesc'
         value={data.detail.learning_achievement}
       />
+      <div className='grid grid-cols-1 gap-4 text-xs text-[#464646] md:grid-cols-2'>
+        <div className='grid grid-cols-3 gap-2'>
+          <span className='col-span-2 font-bold'>Penilaian Kesesuaian deskripsi pekerjaan</span>
+          <span>{data.detail.achievement}</span>
+        </div>
+      </div>
       <h1 className='font-poppins font-bold text-primary'>Preview Dokumen</h1>
       <div className='grid grid-cols-1 gap-[11px]'>
         {data.documents.map((val, i) => (

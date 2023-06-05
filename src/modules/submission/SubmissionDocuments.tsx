@@ -321,21 +321,21 @@ const SubmissionDocuments: FC<SubmissionDocumentsProps> = ({ handleSetPage, subm
       <div className='relative grid gap-6'>
         <InputComponent
           type='file'
-          label='Unggah Transkrip Nilai'
-          required
-          id='transcript'
-          placeholder='Format file .pdf'
-          onChange={handleSetDocuments}
-          value={transcript?.filename ?? ''}
-        />
-        <InputComponent
-          type='file'
           label='Unggah FRS'
           required
           id='frs'
           placeholder='Format file .pdf'
           onChange={handleSetDocuments}
           value={frs?.filename ?? ''}
+        />
+        <InputComponent
+          type='file'
+          label='Unggah Transkrip Nilai'
+          required
+          id='transcript'
+          placeholder='Format file .pdf'
+          onChange={handleSetDocuments}
+          value={transcript?.filename ?? ''}
         />
         {submissionDetailLoading && (
           <div className='absolute left-0 top-0 flex !h-[100%] !w-[100%] items-center justify-center bg-white/50'>

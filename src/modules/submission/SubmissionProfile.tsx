@@ -10,9 +10,10 @@ import { toast } from 'react-hot-toast'
 type SubmissionProfileProps = {
   handleSetPage: (num: number) => void
   submissionId?: number
+  handleSetSubmissionId: (num: number) => void
 }
 
-const SubmissionProfile: FC<SubmissionProfileProps> = ({ handleSetPage, submissionId }) => {
+const SubmissionProfile: FC<SubmissionProfileProps> = ({ handleSetPage, submissionId, handleSetSubmissionId }) => {
   const [form, setForm] = useState({
     entry_period: '',
     class: '',
@@ -25,7 +26,7 @@ const SubmissionProfile: FC<SubmissionProfileProps> = ({ handleSetPage, submissi
   const { data: openPeriodData } = useGetOpenPeriodQuery()
   const [getSubmissionDetail, { data: submissionDetail, error: submissionDetailError }] =
     useLazyGetSubmissionDetailQuery()
-  const [saveSubmissionProfile, { isSuccess: saveSubmissionProfileSuccess, isError: saveSubmissionProfileFailed }] =
+  const [saveSubmissionProfile, { data: saveSubmissionProfileData, isError: saveSubmissionProfileFailed }] =
     useSaveSubmissionProfileMutation()
 
   useEffect(() => {
@@ -41,39 +42,38 @@ const SubmissionProfile: FC<SubmissionProfileProps> = ({ handleSetPage, submissi
   }, [])
 
   useEffect(() => {
+    let tempForm = form
+    const userSession = getUserSession()
+    if (userSession) {
+      tempForm = { ...tempForm, full_name: userSession.name, nim: userSession.nim, email: userSession.email }
+    }
     if (submissionDetail) {
       const data = submissionDetail.result.detail
-      const userSession = getUserSession()
 
-      if (userSession) {
-        setForm({
-          ...form,
-          class: data.class,
-          entry_period: data.entry_period,
-          active_semester: data.semester.toString(),
-          full_name: userSession.name,
-          nim: userSession.nim,
-          email: userSession.email,
-        })
+      tempForm = {
+        ...tempForm,
+        class: data.class,
+        entry_period: data.entry_period,
+        active_semester: data.semester.toString(),
       }
     }
-  }, [submissionDetail])
-
-  useEffect(() => {
     if (openPeriodData) {
-      setForm({ ...form, period_id: openPeriodData.result.id.toString() })
+      tempForm = { ...tempForm, period_id: openPeriodData.result.id.toString() }
     }
-  }, [openPeriodData])
+
+    setForm(tempForm)
+  }, [submissionDetail, openPeriodData])
 
   useEffect(() => {
-    if (saveSubmissionProfileSuccess) {
+    if (saveSubmissionProfileData) {
+      handleSetSubmissionId(saveSubmissionProfileData.result.id)
       handleSetPage(1)
     }
 
     if (saveSubmissionProfileFailed) {
       toast.error('Failed when saving submission')
     }
-  }, [saveSubmissionProfileSuccess, saveSubmissionProfileFailed])
+  }, [saveSubmissionProfileData, saveSubmissionProfileFailed])
 
   const alertUser = (e: BeforeUnloadEvent) => {
     e.preventDefault()
