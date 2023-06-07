@@ -1,31 +1,28 @@
-import React, { ChangeEvent, FC, FormEvent, useEffect, useState } from 'react'
+import { Dialog } from '@headlessui/react'
+import { Add, CalendarMonth } from '@mui/icons-material'
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import { CircularProgress, Tooltip } from '@mui/material'
+import { DateTime } from 'luxon'
+import Link from 'next/link'
+import React, { ChangeEvent, FC, FormEvent, useEffect, useRef, useState } from 'react'
+import { Simulate } from 'react-dom/test-utils'
+import { toast } from 'react-hot-toast'
 
+import InputComponent from '@/components/InputComponent'
+import MyPagination from '@/components/Pagination'
+import { TableTh } from '@/components/Table'
 import DashboardProdiLayout from '@/layouts/Dashboard-prodi-layout'
+import { useLazyGetListPeriodQuery, useSavePeriodMutation, useUpdatePeriodMutation } from '@/services/period'
+import { CommonError, ListMeta } from '@/types/common'
+import { GetPeriodRequest, getPeriodStatusName, PERIOD_STATUS_ENUM, PeriodDto } from '@/types/period'
+import clsxm from '@/utils/clsxm'
 
 import Banner from '~/assets/icons/Banner.png'
-import InputComponent from '@/components/InputComponent'
-import SearchIcon from '~/assets/icons/search-icon.svg'
-import { Add, Tune } from '@mui/icons-material'
-import { TableTh } from '@/components/Table'
-import { DateTime } from 'luxon'
-import clsxm from '@/utils/clsxm'
-import { getSubmissionStatusName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
-import Link from 'next/link'
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import MyPagination from '@/components/Pagination'
 import FileNotFoundIcon from '~/assets/icons/file-not-found-icon.svg'
-import { CommonError, ListMeta } from '@/types/common'
-import { CircularProgress, Tooltip } from '@mui/material'
-import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined'
-import { getPeriodStatusName, PERIOD_STATUS_ENUM, PeriodDto } from '@/types/period'
-import { useLazyGetListPeriodQuery, useSavePeriodMutation, useUpdatePeriodMutation } from '@/services/period'
-import { Dialog } from '@headlessui/react'
-import TimeFast from '~/assets/icons/Icon_Time Fast.svg'
-import { isError } from '@jest/expect-utils'
-import { toast } from 'react-hot-toast'
-import { Simulate } from 'react-dom/test-utils'
 import error = Simulate.error
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined'
+import { DateRange, RangeKeyDict } from 'react-date-range'
 
 type PeriodForm = {
   name: string
@@ -52,6 +49,19 @@ const Dashboard: FC = () => {
     id: null,
   })
   const [isCreateScheduleForm, setCreateScheduleForm] = useState(true)
+  const [previewRangeDateFilter, setPreviewRangeDateFilter] = useState<{ start_date: string; end_date: string } | null>(
+    null
+  )
+  const [appliedRangeDateFilter, setAppliedRangeDateFilter] = useState<{ start_date: string; end_date: string } | null>(
+    null
+  )
+  const [isDateRangeFilterOpen, setDateRangeFilterOpen] = useState(false)
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+    key: 'selection',
+  })
+  const dateRangeRef = useRef<HTMLDivElement>(null)
 
   const [savePeriod, { isSuccess: savePeriodSuccess, error: savePeriodError, isLoading: savePeriodLoading }] =
     useSavePeriodMutation()
@@ -63,27 +73,53 @@ const Dashboard: FC = () => {
     end_date: [],
   })
 
-  const [listSubmissionMeta, setListSubmissionMeta] = useState<ListMeta>({
+  const [listPeriodMeta, setListPeriodMeta] = useState<ListMeta>({
     limit: 10,
     offset: 0,
-    total: 5,
+    total: 0,
     page: 1,
     pages: 1,
   })
 
-  useEffect(() => {
-    getListPeriod({
+  const triggerGetListPeriod = () => {
+    const req: GetPeriodRequest = {
       params: {
-        limit: listSubmissionMeta.limit,
-        offset: listSubmissionMeta.offset,
+        limit: listPeriodMeta.limit,
+        offset: listPeriodMeta.offset,
         order,
       },
-    })
+    }
+
+    if (appliedRangeDateFilter) {
+      req.params.start_date = appliedRangeDateFilter.start_date
+      req.params.end_date = appliedRangeDateFilter.end_date
+    }
+    console.log(req, appliedRangeDateFilter)
+    getListPeriod(req)
+  }
+
+  useEffect(() => {
+    triggerGetListPeriod()
+    function handleClickOutsideDateRange(e: MouseEvent) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (dateRangeRef.current && !dateRangeRef.current.contains(e.target)) {
+        setDateRangeFilterOpen(false)
+      }
+    }
+
+    // Bind the event listener
+    document.addEventListener('mousedown', handleClickOutsideDateRange)
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener('mousedown', handleClickOutsideDateRange)
+    }
   }, [])
 
   useEffect(() => {
     if (listPeriodData) {
       setPeriods(listPeriodData.result)
+      setListPeriodMeta({ ...listPeriodMeta, ...(listPeriodData.meta as ListMeta) })
     }
   }, [listPeriodData])
 
@@ -91,13 +127,7 @@ const Dashboard: FC = () => {
     if (savePeriodSuccess || updatePeriodSuccess) {
       setDialogueScheduleFormOpen(false)
       resetScheduleForm()
-      getListPeriod({
-        params: {
-          limit: listSubmissionMeta.limit,
-          offset: listSubmissionMeta.offset,
-          order,
-        },
-      })
+      triggerGetListPeriod()
     }
     if (savePeriodSuccess) {
       toast.success('Jadwal telah ditambahkan')
@@ -117,8 +147,26 @@ const Dashboard: FC = () => {
     }
   }, [savePeriodSuccess, savePeriodError, updatePeriodSuccess, updatePeriodError])
 
-  const handlePageClick = () => {
-    return
+  useEffect(() => {
+    if (dateRange) {
+      const start_date = DateTime.fromJSDate(dateRange.startDate).toFormat('yyyy-MM-dd')
+      const end_date = DateTime.fromJSDate(dateRange.endDate).toFormat('yyyy-MM-dd')
+      setPreviewRangeDateFilter({ start_date, end_date })
+    }
+  }, [dateRange])
+
+  useEffect(() => {
+    if (listPeriodMeta) {
+      triggerGetListPeriod()
+    }
+  }, [listPeriodMeta])
+
+  useEffect(() => {
+    triggerGetListPeriod()
+  }, [appliedRangeDateFilter])
+
+  const handlePageClick = (e: { offset: number }) => {
+    setListPeriodMeta({ ...listPeriodMeta, offset: e.offset })
   }
 
   const handleChangeScheduleForm = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -172,6 +220,10 @@ const Dashboard: FC = () => {
     })
     setDialogueScheduleFormOpen(true)
   }
+
+  const hanldeDateRangeChange = (ranges: RangeKeyDict) => {
+    setDateRange({ ...dateRange, ...ranges.selection })
+  }
   return (
     <DashboardProdiLayout title='Dashboard'>
       <div className='mb-[50px] grid w-full grid-cols-1 gap-8 px-4 pt-8 md:px-32'>
@@ -186,23 +238,59 @@ const Dashboard: FC = () => {
             <div className='actions mt-2 flex flex-col flex-wrap justify-between gap-2 sm:flex-row'>
               <div className='left'>
                 <form
-                  onSubmit={() => {
-                    return
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    const start_date = DateTime.fromJSDate(dateRange.startDate).toFormat('yyyy-MM-dd')
+                    const end_date = DateTime.fromJSDate(dateRange.endDate).toFormat('yyyy-MM-dd')
+                    setAppliedRangeDateFilter({ start_date, end_date })
                   }}
                   className='flex flex-row flex-wrap'
                 >
-                  <InputComponent
-                    placeholder='Search'
-                    classNameDiv='flex-1'
-                    className='w-full rounded border-gray-200 pr-12 text-xs lg:w-[420px]'
-                    icon={<SearchIcon />}
-                    value={''}
-                    onChange={(e) => {
-                      return
-                    }}
-                  />
+                  <div className='relative h-fit w-fit'>
+                    <button
+                      type='button'
+                      placeholder='Filter Tanggal'
+                      className='flex w-full cursor-pointer items-center rounded border border-gray-200 px-3 py-[4px] text-left text-xs active:bg-gray-200 lg:w-[420px]'
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setDateRangeFilterOpen(true)
+                      }}
+                    >
+                      <span className='flex-1'>
+                        {previewRangeDateFilter ? (
+                          <>
+                            {previewRangeDateFilter.start_date} <span className='text-gray-400'>-</span>{' '}
+                            {previewRangeDateFilter.end_date}
+                          </>
+                        ) : (
+                          'Filter Tanggal'
+                        )}
+                      </span>
+                      <CalendarMonth className='text-gray-400' />
+                    </button>
+                    <div
+                      className={clsxm('absolute', isDateRangeFilterOpen ? ' block' : ' hidden')}
+                      ref={dateRangeRef}
+                    >
+                      <DateRange
+                        ranges={[dateRange]}
+                        onChange={hanldeDateRangeChange}
+                        className='shadow'
+                      />
+                    </div>
+                  </div>
                   <button className='btn-primary float-right ml-2 px-5 py-2 font-montserrat text-xs font-bold'>
                     Filter
+                  </button>
+                  <button
+                    className='float-right ml-2 rounded-md bg-danger px-5 py-2 font-montserrat text-xs font-bold text-white hover:bg-red-600 active:bg-red-700'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setAppliedRangeDateFilter(null)
+                      console.log(appliedRangeDateFilter)
+                    }}
+                  >
+                    Reset
                   </button>
                 </form>
               </div>
@@ -309,11 +397,13 @@ const Dashboard: FC = () => {
                   </table>
                 </div>
                 <div className='flex justify-end'>
-                  <MyPagination
-                    onPageClick={handlePageClick}
-                    limit={listSubmissionMeta.limit}
-                    pages={listSubmissionMeta.pages}
-                  />
+                  {listPeriodMeta.pages > 1 && (
+                    <MyPagination
+                      onPageClick={handlePageClick}
+                      limit={listPeriodMeta.limit}
+                      pages={listPeriodMeta.pages}
+                    />
+                  )}
                 </div>
               </div>
             ) : (
