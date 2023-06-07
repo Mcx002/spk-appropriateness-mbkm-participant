@@ -1,6 +1,6 @@
-import React, { FC } from 'react'
-import ReactPaginate from 'react-paginate'
 import usePagination from '@mui/material/usePagination'
+import React, { FC } from 'react'
+
 import clsxm from '@/utils/clsxm'
 
 type PaginationProps = {

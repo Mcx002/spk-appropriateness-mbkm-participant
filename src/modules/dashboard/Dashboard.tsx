@@ -1,24 +1,27 @@
 import { Add } from '@mui/icons-material'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import { Tooltip } from '@mui/material'
 import { DateTime } from 'luxon'
 import Link from 'next/link'
 import React, { FC, useEffect, useState } from 'react'
+import { useUpdateEffect } from 'usehooks-ts'
 
+import MyPagination from '@/components/Pagination'
 import { TableTh } from '@/components/Table'
+import DashboardStudentLayout from '@/layouts/Dashboard-student-layout'
+import { useGetOpenPeriodQuery } from '@/services/period'
+import { useLazyGetMySubmissionsQuery } from '@/services/submissions'
+import { ListMeta } from '@/types/common'
+import { GetSubmissionResponse, getSubmissionStatusName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
+import clsxm from '@/utils/clsxm'
 
 import Banner from '~/assets/icons/Banner.png'
 import FileNotFoundIcon from '~/assets/icons/file-not-found-icon.svg'
-import { useLazyGetMySubmissionsQuery } from '@/services/submissions'
-import { GetSubmissionResponse, getSubmissionStatusName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
-import { useUpdateEffect } from 'usehooks-ts'
-import clsxm from '@/utils/clsxm'
-import { ListMeta } from '@/types/common'
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
-import MyPagination from '@/components/Pagination'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import DashboardStudentLayout from '@/layouts/Dashboard-student-layout'
 
 const Dashboard: FC = () => {
+  const { data: openPeriodData } = useGetOpenPeriodQuery()
   const [getSubmissions, { data: submissionsData }] = useLazyGetMySubmissionsQuery()
   const [submissions, setSubmissions] = useState<GetSubmissionResponse[]>([])
   const [dataCount, setDataCount] = useState(0)
@@ -71,11 +74,17 @@ const Dashboard: FC = () => {
         <div className='grid grid-cols-1 gap-8'>
           <div className='title flex justify-between'>
             <h1 className='text-2xl font-bold'>Daftar Pengajuan</h1>
-            <Link href='/submission'>
-              <button className='btn-primary float-right px-5 py-2 font-montserrat text-xs font-bold'>
-                <Add className='mat-icon-normal' /> Pengajuan MBKM
+            {openPeriodData ? (
+              <Link href='/submission'>
+                <button className='btn-primary float-right px-5 py-2 font-montserrat text-xs font-bold'>
+                  <Add className='mat-icon-normal' /> Pengajuan MBKM
+                </button>
+              </Link>
+            ) : (
+              <button className='btn cursor-default bg-gray-200 px-5 py-2 font-montserrat text-xs font-bold text-gray-500'>
+                Tidak ada periode yang dibuka
               </button>
-            </Link>
+            )}
           </div>
           <div className='w-full overflow-hidden rounded-xl text-sm'>
             {dataCount > 0 ? (
@@ -99,7 +108,9 @@ const Dashboard: FC = () => {
                         >
                           Semester
                         </TableTh>
-                        <TableTh>Status</TableTh>
+                        <TableTh>
+                          <div className='w-[100%] text-center'>Status</div>
+                        </TableTh>
                         <TableTh>Aksi</TableTh>
                       </tr>
                     </thead>
@@ -114,13 +125,14 @@ const Dashboard: FC = () => {
                           </td>
                           <td>Semester {val.semester}</td>
                           <td className='align-middle'>
-                            <div className='flex justify-center md:justify-start'>
+                            <div className='flex justify-center'>
                               <div
                                 className={clsxm(
                                   'w-fit rounded-2xl p-2 text-center',
                                   val.status === SUBMISSION_STATUS_ENUM.APPROVED && 'bg-[#C9FFD5] text-[#329C70]',
                                   val.status === SUBMISSION_STATUS_ENUM.REJECTED && 'bg-[#FFD6D6] text-[#EF5656]',
-                                  val.status === SUBMISSION_STATUS_ENUM.SUBMITTED && 'bg-[#DFF7FF] text-[#415DF3]'
+                                  val.status === SUBMISSION_STATUS_ENUM.SUBMITTED && 'bg-[#DFF7FF] text-[#415DF3]',
+                                  val.status === SUBMISSION_STATUS_ENUM.NEW && 'bg-gray-200 text-gray-500'
                                 )}
                               >
                                 {getSubmissionStatusName(val.status)}
@@ -129,29 +141,35 @@ const Dashboard: FC = () => {
                           </td>
                           <td className='flex items-center justify-center gap-2'>
                             {val.status !== SUBMISSION_STATUS_ENUM.NEW && (
-                              <Link
-                                href={`/submission/${val.id}`}
-                                className='text-[#006BCD]'
-                              >
-                                <VisibilityOutlinedIcon />
-                              </Link>
+                              <Tooltip title='Detail Pengajuan'>
+                                <Link
+                                  href={`/submission/${val.id}`}
+                                  className='text-[#006BCD]'
+                                >
+                                  <VisibilityOutlinedIcon />
+                                </Link>
+                              </Tooltip>
                             )}
                             {val.status === SUBMISSION_STATUS_ENUM.APPROVED && (
-                              <a
-                                href={'#TODO:implement-recomendation-letter'}
-                                target='_blank'
-                                className='text-[#3EAB84]'
-                              >
-                                <FileDownloadOutlinedIcon />
-                              </a>
+                              <Tooltip title='Download Surat Rekomendasi'>
+                                <Link
+                                  href='#TODO:implement-recomendation-letter'
+                                  target='_blank'
+                                  className='text-[#3EAB84]'
+                                >
+                                  <FileDownloadOutlinedIcon />
+                                </Link>
+                              </Tooltip>
                             )}
                             {val.status === SUBMISSION_STATUS_ENUM.NEW && (
-                              <Link
-                                href={`/submission/${val.id}/edit`}
-                                className='text-[#006BCD]'
-                              >
-                                <EditOutlinedIcon />
-                              </Link>
+                              <Tooltip title='Lanjutkan Pengajuan'>
+                                <Link
+                                  href={`/submission/${val.id}/edit`}
+                                  className='text-[#006BCD]'
+                                >
+                                  <EditOutlinedIcon />
+                                </Link>
+                              </Tooltip>
                             )}
                           </td>
                         </tr>

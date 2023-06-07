@@ -1,23 +1,22 @@
-import DashboardProdiLayout from '@/layouts/Dashboard-prodi-layout'
-import { ChevronLeft, ChevronRight } from '@mui/icons-material'
-import InputComponent from '@/components/InputComponent'
-import SearchIcon from '~/assets/icons/search-icon.svg'
-import { Autocomplete, TextField } from '@mui/material'
-import React, { FormEvent, SyntheticEvent, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import Link from 'next/link'
-import { TableTh } from '@/components/Table'
-import { DateTime } from 'luxon'
-import clsxm from '@/utils/clsxm'
-import { getSubmissionStatusName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import MyPagination from '@/components/Pagination'
-import FileNotFoundIcon from '~/assets/icons/file-not-found-icon.svg'
-import { useLazyGetDetailPeriodQuery, useLazyGetSpkResultQuery } from '@/services/period'
-import { PeriodDto, SpkResponse } from '@/types/period'
-import { toast } from 'react-hot-toast'
-import { CommonError } from '@/types/common'
 import { Dialog } from '@headlessui/react'
+import { ChevronLeft, ChevronRight } from '@mui/icons-material'
+import { Autocomplete, TextField } from '@mui/material'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import React, { FormEvent, SyntheticEvent, useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
+
+import InputComponent from '@/components/InputComponent'
+import MyPagination from '@/components/Pagination'
+import { TableTh } from '@/components/Table'
+import DashboardProdiLayout from '@/layouts/Dashboard-prodi-layout'
+import { useLazyGetDetailPeriodQuery, useLazyGetSpkResultQuery } from '@/services/period'
+import { CommonError } from '@/types/common'
+import { PeriodDto, SpkResponse } from '@/types/period'
+import { SUBMISSION_STATUS_ENUM } from '@/types/submission'
+import clsxm from '@/utils/clsxm'
+
+import FileNotFoundIcon from '~/assets/icons/file-not-found-icon.svg'
 
 const WorthinessRanking = () => {
   const router = useRouter()
@@ -215,7 +214,7 @@ const WorthinessRanking = () => {
                           <td>{val.name}</td>
                           <td>{val.criteria[0].score}</td>
                           <td>{val.preference_value.toFixed(2)}</td>
-                          <td className='flex flex justify-center gap-2'>
+                          <td className='flex justify-center gap-2'>
                             <button
                               className='rounded-2xl bg-[#FFC6BA] px-[8px] py-[5px] text-[#EB440F] active:bg-[#f5ae9f]'
                               onClick={() => setRejectDialogOpen(true)}

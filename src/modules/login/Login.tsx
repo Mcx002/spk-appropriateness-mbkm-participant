@@ -1,9 +1,9 @@
+import { CircularProgress } from '@mui/material'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
-import ReCAPTCHA from 'react-google-recaptcha'
 import toast, { Toaster } from 'react-hot-toast'
 
 import InputComponent from '@/components/InputComponent'
@@ -11,12 +11,10 @@ import InputPasswordComponent from '@/components/InputPasswordComponent'
 import { useLoginMutation } from '@/services/auth'
 import { LoginError } from '@/types/auth'
 import { BaseResponse } from '@/types/common'
+import { getUserSession, setTokenSession, UserRole } from '@/utils/auth'
 import clsxm from '@/utils/clsxm'
 
 import BgLogin from '~/assets/icons/bg_login.png'
-import GoogleIcon from '~/assets/icons/google-login-button-icon.svg'
-import { CircularProgress } from '@mui/material'
-import { getUserSession, setTokenSession, UserRole } from '@/utils/auth'
 
 const Login: NextPage = () => {
   const router = useRouter()

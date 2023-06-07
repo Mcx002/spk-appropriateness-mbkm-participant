@@ -1,16 +1,15 @@
+import { Dialog } from '@headlessui/react'
 import { Description } from '@mui/icons-material'
+import { CircularProgress } from '@mui/material'
+import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
 
 import InputComponent from '@/components/InputComponent'
 import { useProceedSubmissionMutation } from '@/services/submissions'
-import { GetDetailSubmissionResponse, SUBMISSION_STATUS_ENUM } from '@/types/submission'
-import { useRouter } from 'next/router'
-import { Dialog } from '@headlessui/react'
-import { toast } from 'react-hot-toast'
 import { CommonError } from '@/types/common'
-import clsx from 'clsx'
+import { GetDetailSubmissionResponse, SUBMISSION_STATUS_ENUM } from '@/types/submission'
 import clsxm from '@/utils/clsxm'
-import { CircularProgress } from '@mui/material'
 
 type Props = {
   data: GetDetailSubmissionResponse
@@ -47,13 +46,15 @@ const SubmissionDetailPreview: FC<Props> = ({ data }) => {
   useEffect(() => {
     if (proceedSubmissionError) {
       const error = (proceedSubmissionError as CommonError).data.result as ProceedSubmissionError
-      setReasonError(error.reason)
+      if (error) {
+        setReasonError(error.reason)
+      }
       toast.error((proceedSubmissionError as CommonError).data.message)
     }
 
     if (proceedSubmissionSuccess) {
       toast.success('Pengajuan user telah di proses')
-      router.push(`/prodi/period/${periodId}`)
+      router.replace(`/prodi/period/${periodId}`)
     }
   }, [proceedSubmissionError, proceedSubmissionSuccess])
 

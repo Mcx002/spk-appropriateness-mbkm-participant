@@ -1,7 +1,7 @@
-import { NextPage } from 'next'
-import React from 'react'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
+import { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import React from 'react'
 
 const Index: NextPage = () => {
   const router = useRouter()

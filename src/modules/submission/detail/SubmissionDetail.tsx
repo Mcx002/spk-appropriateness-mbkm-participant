@@ -1,14 +1,14 @@
-import { useRouter } from 'next/router'
-import DashboardLayout from '@/layouts/Dashboard-layout'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 import Link from 'next/link'
-import Card, { CardBody, CardHead } from '@/components/Card'
-import { useLazyGetSubmissionDetailQuery } from '@/services/submissions'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { GetDetailSubmissionResponse, SUBMISSION_STATUS_ENUM } from '@/types/submission'
-import SubmissionDetailPreview from '@/modules/submission/detail/SubmissionDetailPreview'
-import { CommonError } from '@/types/common'
+
+import Card, { CardBody, CardHead } from '@/components/Card'
 import DashboardStudentLayout from '@/layouts/Dashboard-student-layout'
+import SubmissionDetailPreview from '@/modules/submission/detail/SubmissionDetailPreview'
+import { useLazyGetSubmissionDetailQuery } from '@/services/submissions'
+import { CommonError } from '@/types/common'
+import { GetDetailSubmissionResponse, SUBMISSION_STATUS_ENUM } from '@/types/submission'
 
 export const SubmissionDetail = () => {
   const router = useRouter()

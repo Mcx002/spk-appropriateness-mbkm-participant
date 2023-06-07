@@ -1,21 +1,23 @@
-import { useLazyGetSubmissionsQuery } from '@/services/submissions'
-import React, { FormEvent, SyntheticEvent, useEffect, useState } from 'react'
-import { GetSubmissionResponse, getSubmissionStatusName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
-import { ListMeta } from '@/types/common'
-import { useUpdateEffect } from 'usehooks-ts'
-import DashboardProdiLayout from '@/layouts/Dashboard-prodi-layout'
-import InputComponent from '@/components/InputComponent'
-import SearchIcon from '~/assets/icons/search-icon.svg'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
-import { Autocomplete, TextField } from '@mui/material'
-import { TableTh } from '@/components/Table'
-import { DateTime } from 'luxon'
-import clsxm from '@/utils/clsxm'
-import Link from 'next/link'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import MyPagination from '@/components/Pagination'
-import FileNotFoundIcon from '~/assets/icons/file-not-found-icon.svg'
+import { Autocomplete, TextField } from '@mui/material'
+import { DateTime } from 'luxon'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
+import React, { FormEvent, SyntheticEvent, useEffect, useState } from 'react'
+import { useUpdateEffect } from 'usehooks-ts'
+
+import InputComponent from '@/components/InputComponent'
+import MyPagination from '@/components/Pagination'
+import { TableTh } from '@/components/Table'
+import DashboardProdiLayout from '@/layouts/Dashboard-prodi-layout'
+import { useLazyGetSubmissionsQuery } from '@/services/submissions'
+import { ListMeta } from '@/types/common'
+import { GetSubmissionResponse, getSubmissionStatusName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
+import clsxm from '@/utils/clsxm'
+
+import FileNotFoundIcon from '~/assets/icons/file-not-found-icon.svg'
+import SearchIcon from '~/assets/icons/search-icon.svg'
 
 const SubmissionList = () => {
   const router = useRouter()
@@ -134,6 +136,7 @@ const SubmissionList = () => {
                   <Link
                     className='link'
                     href='/prodi/dashboard'
+                    replace={true}
                   >
                     Beranda
                   </Link>
@@ -278,6 +281,7 @@ const SubmissionList = () => {
                             <Link
                               href={`/prodi/period/${periodId}/submission/${val.id}`}
                               className='text-[#006BCD]'
+                              replace={true}
                             >
                               <VisibilityOutlinedIcon />
                             </Link>

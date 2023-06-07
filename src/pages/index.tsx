@@ -1,19 +1,23 @@
-import { getCookie } from 'cookies-next'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 
-import { USER_ACCESS_TOKEN } from '@/config/token'
+import { getUserSession, UserRole } from '@/utils/auth'
 
 const Page: NextPage = () => {
   const router = useRouter()
 
   useEffect(() => {
-    if (getCookie(USER_ACCESS_TOKEN)) {
-      router.push('/dashboard')
-    } else {
-      router.push('/login')
+    const user = getUserSession()
+    if (user) {
+      if (user.role === UserRole.Lecture) {
+        router.push('/prodi/dashboard')
+      }
+      if (user.role === UserRole.Student) {
+        router.push('/dashboard')
+      }
     }
+    router.push('/login')
   }, [])
 
   return <div />

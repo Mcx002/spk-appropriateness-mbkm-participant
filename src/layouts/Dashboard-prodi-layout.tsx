@@ -1,9 +1,10 @@
-import { FC, useEffect, useState } from 'react'
-import { getUserSession, UserRole } from '@/utils/auth'
 import { useRouter } from 'next/router'
-import Forbidden from '@/modules/errors/403'
 import { ReactNodeLike } from 'prop-types'
+import { FC, useEffect, useState } from 'react'
+
 import DashboardLayout from '@/layouts/Dashboard-layout'
+import Forbidden from '@/modules/errors/403'
+import { getUserSession, UserRole } from '@/utils/auth'
 
 type Props = {
   children: ReactNodeLike

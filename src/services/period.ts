@@ -1,8 +1,8 @@
 import { createApi } from '@reduxjs/toolkit/dist/query/react'
 
-import { baseQueryWithReauth } from '@/utils/api'
 import { BaseResponse } from '@/types/common'
 import { GetPeriodRequest, GetSpkResultRequest, PeriodDto, SpkResponse } from '@/types/period'
+import { baseQueryWithReauth } from '@/utils/api'
 
 const api = createApi({
   reducerPath: 'period',
@@ -18,9 +18,10 @@ const api = createApi({
       }),
     }),
     getListPeriod: builder.query<BaseResponse<PeriodDto[]>, GetPeriodRequest>({
-      query: () => ({
+      query: ({ params }) => ({
         method: 'GET',
         url: '/submission-period',
+        params,
       }),
     }),
     savePeriod: builder.mutation<BaseResponse<PeriodDto>, FormData>({

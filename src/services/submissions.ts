@@ -1,5 +1,7 @@
+import { EmptyObject } from '@reduxjs/toolkit'
 import { createApi } from '@reduxjs/toolkit/query/react'
 
+import { BaseResponse, GetDetailRequest } from '@/types/common'
 import {
   CreateSubmissionRequest,
   GetDetailSubmissionResponse,
@@ -9,8 +11,6 @@ import {
   SubmissionDocumentResponse,
   SubmissionResponse,
 } from '@/types/submission'
-import { EmptyObject } from '@reduxjs/toolkit'
-import { BaseResponse, GetDetailRequest } from '@/types/common'
 import { baseQueryWithReauth } from '@/utils/api'
 
 const api = createApi({
