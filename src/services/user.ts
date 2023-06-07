@@ -1,7 +1,8 @@
+import { fetchBaseQuery } from '@reduxjs/toolkit/query'
 import { createApi } from '@reduxjs/toolkit/query/react'
+
 import { BaseResponse } from '@/types/common'
 import { User } from '@/types/user'
-import { fetchBaseQuery } from '@reduxjs/toolkit/query'
 
 const api = createApi({
   reducerPath: 'users',
@@ -14,7 +15,7 @@ const api = createApi({
     getProfile: builder.query<BaseResponse<User>, void>({
       query: () => ({
         method: 'GET',
-        url: `//localhost:3001/users/profile`,
+        url: '//localhost:3001/users/profile',
       }),
     }),
   }),

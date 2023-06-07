@@ -1,5 +1,4 @@
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 const Forbidden = () => {

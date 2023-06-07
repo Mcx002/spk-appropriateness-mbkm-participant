@@ -1,10 +1,9 @@
 import { Description } from '@mui/icons-material'
-import { CircularProgress } from '@mui/material'
 import { FC, useEffect, useState } from 'react'
 
 import InputComponent from '@/components/InputComponent'
 import { useLazyGetMyDocumentsQuery } from '@/services/submissions'
-import { GetDetailSubmissionResponse, SubmissionType } from '@/types/submission'
+import { GetDetailSubmissionResponse } from '@/types/submission'
 
 type Props = {
   data: GetDetailSubmissionResponse

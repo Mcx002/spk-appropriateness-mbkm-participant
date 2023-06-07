@@ -1,17 +1,17 @@
 import { Dialog } from '@headlessui/react'
 import { Description, Info } from '@mui/icons-material'
+import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined'
 import { CircularProgress } from '@mui/material'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { FC, MouseEvent, useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
 
+import InputComponent from '@/components/InputComponent'
 import { useLazyGetSubmissionDetailQuery, useSubmitSubmissionMutation } from '@/services/submissions'
 import { GetDetailSubmissionResponse } from '@/types/submission'
-import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined'
 
 import TimeFast from '~/assets/icons/Icon_Time Fast.svg'
-import InputComponent from '@/components/InputComponent'
-import { useRouter } from 'next/router'
-import { toast } from 'react-hot-toast'
 
 type SubmissionPreviewProps = {
   handleSetPage: (num: number) => void

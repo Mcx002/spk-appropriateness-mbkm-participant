@@ -1,17 +1,16 @@
-import { deleteCookie, getCookie, setCookie } from 'cookies-next'
-import { DateTime } from 'luxon'
+import { deleteCookie, getCookie } from 'cookies-next'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-hot-toast'
+import { useUpdateEffect } from 'usehooks-ts'
 
-import { USER_ACCESS_TOKEN, USER_REFRESH_TOKEN, USER_ACCESS_TOKEN_EXPIRATION } from '@/config/token'
+import authRouting from '@/config/authRouting'
+import { USER_ACCESS_TOKEN, USER_ACCESS_TOKEN_EXPIRATION, USER_REFRESH_TOKEN } from '@/config/token'
 import { useRefreshTokenMutation } from '@/services/auth'
+import { setTokenSession } from '@/utils/auth'
 
 import { AuthAppContextValue, AuthStatus } from './auth/types'
 import { AuthUserContext } from './AuthContext'
-import { useUpdateEffect } from 'usehooks-ts'
-import authRouting from '@/config/authRouting'
-import { setTokenSession } from '@/utils/auth'
 
 interface AuthProviderProps {
   children: React.ReactNode

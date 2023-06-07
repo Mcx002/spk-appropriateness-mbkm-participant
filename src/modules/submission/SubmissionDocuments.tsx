@@ -1,17 +1,15 @@
+import { CircularProgress } from '@mui/material'
 import Link from 'next/link'
 import { ChangeEvent, FC, FormEvent, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
 import InputComponent from '@/components/InputComponent'
-import { SubmissionDocumentsState, SubmissionFormGradesState } from '@/types/submission'
 import {
-  useLazyGetMyDocumentsQuery,
   useLazyGetSubmissionDetailQuery,
   useSaveSubmissionGradeMutation,
   useUploadFrsMutation,
   useUploadTranscriptMutation,
 } from '@/services/submissions'
-import toast from 'react-hot-toast'
-import { CircularProgress } from '@mui/material'
 import { CommonError, FileType } from '@/types/common'
 
 type SubmissionDocumentsProps = {

@@ -1,5 +1,5 @@
 import { BaseData } from '@/types/common'
-import { IdName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
+import { IdName } from '@/types/submission'
 
 export interface PeriodDto extends BaseData {
   created_by: IdName
@@ -32,6 +32,8 @@ export type GetPeriodRequest = {
     limit: number
     offset: number
     order: string
+    start_date?: string
+    end_date?: string
   }
 }
 

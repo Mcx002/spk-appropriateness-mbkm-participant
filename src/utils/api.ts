@@ -3,12 +3,12 @@ import { deleteCookie, getCookie } from 'cookies-next'
 import { createHash } from 'crypto'
 import { DateTime } from 'luxon'
 import qs from 'qs'
+import { toast } from 'react-hot-toast'
 
 import { apiBaseUrl, apiClientId, apiClientName, apiClientSecret, mockBaseUrl } from '@/config/env'
 import { USER_ACCESS_TOKEN, USER_ACCESS_TOKEN_EXPIRATION, USER_REFRESH_TOKEN } from '@/config/token'
-import { AuthResponse } from '@/types/auth'
-import { toast } from 'react-hot-toast'
 import { message } from '@/data/wording'
+import { AuthResponse } from '@/types/auth'
 import { setTokenSession } from '@/utils/auth'
 
 export const headerPrepareAuth = (headers: Headers): void => {

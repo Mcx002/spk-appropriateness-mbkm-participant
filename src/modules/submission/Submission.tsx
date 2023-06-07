@@ -1,16 +1,15 @@
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import Card, { CardBody, CardHead } from '@/components/Card'
+import DashboardStudentLayout from '@/layouts/Dashboard-student-layout'
 import { SubmissionSteps } from '@/modules/submission/SubmissionSteps'
-import { SubmissionDocumentsState } from '@/types/submission'
 
 import SubmissionDocuments from './SubmissionDocuments'
 import SubmissionPreview from './SubmissionPreview'
 import SubmissionProfile from './SubmissionProfile'
-import DashboardStudentLayout from '@/layouts/Dashboard-student-layout'
 
 const Submission = () => {
   const router = useRouter()
@@ -58,6 +57,7 @@ const Submission = () => {
                 <Link
                   className='link'
                   href='/dashboard'
+                  replace={true}
                 >
                   Beranda
                 </Link>

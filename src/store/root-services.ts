@@ -1,9 +1,9 @@
 import auth from '@/services/auth'
 import faculty from '@/services/faculty'
+import period from '@/services/period'
 import programStudy from '@/services/program-study'
 import submissions from '@/services/submissions'
 import users from '@/services/user'
-import period from '@/services/period'
 
 const rootServices = {
   reducers: {

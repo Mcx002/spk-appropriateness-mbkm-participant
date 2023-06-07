@@ -1,22 +1,20 @@
+import { Dialog } from '@headlessui/react'
 import { ArrowDropDown } from '@mui/icons-material'
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
+import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone'
+import { CircularProgress } from '@mui/material'
+import { deleteCookie } from 'cookies-next'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { ReactNodeLike } from 'prop-types'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
 
-import LsUtamaLogo from '~/assets/icons/ls-utama-logo.png'
-import { useGetProfileQuery } from '@/services/user'
-import { User } from '@/types/user'
-import clsxm from '@/utils/clsxm'
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
-import { deleteCookie } from 'cookies-next'
 import { USER_ACCESS_TOKEN, USER_ACCESS_TOKEN_EXPIRATION, USER_REFRESH_TOKEN } from '@/config/token'
-import { useRouter } from 'next/router'
-import { Dialog } from '@headlessui/react'
-import TimeFast from '~/assets/icons/Icon_Time Fast.svg'
-import { CircularProgress } from '@mui/material'
-import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone'
 import { getUserSession } from '@/utils/auth'
+import clsxm from '@/utils/clsxm'
+
+import LsUtamaLogo from '~/assets/icons/ls-utama-logo.png'
 
 type dashboardProps = {
   title: string

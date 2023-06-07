@@ -1,13 +1,14 @@
-import { useRouter } from 'next/router'
-import DashboardLayout from '@/layouts/Dashboard-layout'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 import Link from 'next/link'
-import Card, { CardBody, CardHead } from '@/components/Card'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { GetDetailSubmissionResponse, SUBMISSION_STATUS_ENUM } from '@/types/submission'
-import SubmissionDetailPreview from '@/modules/prodi/submission/detail/SubmissionDetailPreview'
+
+import Card, { CardBody, CardHead } from '@/components/Card'
+import DashboardLayout from '@/layouts/Dashboard-layout'
 import SubmissionDetailApprovalForm from '@/modules/prodi/submission/detail/SubmissionDetailApprovalForm'
+import SubmissionDetailPreview from '@/modules/prodi/submission/detail/SubmissionDetailPreview'
 import { useLazyGetSubmissionDetailQuery } from '@/services/submissions'
+import { GetDetailSubmissionResponse, SUBMISSION_STATUS_ENUM } from '@/types/submission'
 
 export const SubmissionDetail = () => {
   const router = useRouter()
@@ -46,6 +47,7 @@ export const SubmissionDetail = () => {
                 <Link
                   className='link'
                   href='/prodi/dashboard'
+                  replace={true}
                 >
                   Beranda
                 </Link>
@@ -53,6 +55,7 @@ export const SubmissionDetail = () => {
                 <Link
                   className='link'
                   href={`/prodi/period/${periodId}`}
+                  replace={true}
                 >
                   Daftar Pengajuan
                 </Link>
