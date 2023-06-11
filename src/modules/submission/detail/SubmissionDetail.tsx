@@ -29,6 +29,7 @@ export const SubmissionDetail = () => {
   const handleBackRoute = () => {
     router.back()
   }
+
   return (
     <DashboardStudentLayout title='Create Submission'>
       <div className='mb-[50px] mt-[39px] grid grid-cols-1 gap-8 px-0 md:px-[140px]'>
@@ -63,9 +64,11 @@ export const SubmissionDetail = () => {
             </CardHead>
             <CardBody className='body grid grid-cols-1 gap-6 p-6'>
               {submission &&
-                (submission.detail.status == SUBMISSION_STATUS_ENUM.APPROVED ? (
+                (submission.detail.status == SUBMISSION_STATUS_ENUM.APPROVED ||
+                submission.detail.status == SUBMISSION_STATUS_ENUM.ELIGIBLE ? (
                   <SubmissionDetailPreview data={submission} />
-                ) : submission.detail.status == SUBMISSION_STATUS_ENUM.REJECTED ? (
+                ) : submission.detail.status == SUBMISSION_STATUS_ENUM.REJECTED ||
+                  submission.detail.status == SUBMISSION_STATUS_ENUM.NOT_ELIGIBLE ? (
                   <div className='rounded border border-[#949494] p-16'>
                     Data yang Anda kirimkan kurang memenuhi syarat untuk mengikuti proses tahapan MBKM
                     <br />

@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import { ReactNodeLike } from 'prop-types'
 import { FC, useEffect, useState } from 'react'
 
@@ -12,7 +11,6 @@ type Props = {
 }
 
 const DashboardProdiLayout: FC<Props> = ({ children, title }) => {
-  const router = useRouter()
   const [isProhibited, setProhibited] = useState(true)
   useEffect(() => {
     const user = getUserSession()

@@ -129,8 +129,10 @@ const Dashboard: FC = () => {
                               <div
                                 className={clsxm(
                                   'w-fit rounded-2xl p-2 text-center',
-                                  val.status === SUBMISSION_STATUS_ENUM.APPROVED && 'bg-[#C9FFD5] text-[#329C70]',
+                                  val.status === SUBMISSION_STATUS_ENUM.ELIGIBLE && 'bg-[#C9FFD5] text-[#329C70]',
+                                  val.status === SUBMISSION_STATUS_ENUM.APPROVED && 'bg-[#fada82] text-[#a68428]',
                                   val.status === SUBMISSION_STATUS_ENUM.REJECTED && 'bg-[#FFD6D6] text-[#EF5656]',
+                                  val.status === SUBMISSION_STATUS_ENUM.NOT_ELIGIBLE && 'bg-[#FFD6D6] text-[#EF5656]',
                                   val.status === SUBMISSION_STATUS_ENUM.SUBMITTED && 'bg-[#DFF7FF] text-[#415DF3]',
                                   val.status === SUBMISSION_STATUS_ENUM.NEW && 'bg-gray-200 text-gray-500'
                                 )}
@@ -150,10 +152,10 @@ const Dashboard: FC = () => {
                                 </Link>
                               </Tooltip>
                             )}
-                            {val.status === SUBMISSION_STATUS_ENUM.APPROVED && (
+                            {val.status === SUBMISSION_STATUS_ENUM.ELIGIBLE && (
                               <Tooltip title='Download Surat Rekomendasi'>
                                 <Link
-                                  href='#TODO:implement-recomendation-letter'
+                                  href={val.recommendation_letter.url}
                                   target='_blank'
                                   className='text-[#3EAB84]'
                                 >
