@@ -115,6 +115,7 @@ export interface GetSubmissionResponse extends BaseData {
   approved_by: ApprovedBy
   approved_at: string
   student: StudentDto
+  recommendation_letter: GetDetailSubmissionDocumentResponse
 }
 export interface GetDetailSubmissionDocumentResponse {
   name: string
@@ -132,18 +133,24 @@ export enum SUBMISSION_STATUS_ENUM {
   SUBMITTED = 'SUBMITTED',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
+  ELIGIBLE = 'ELIGIBLE',
+  NOT_ELIGIBLE = 'NOT_ELIGIBLE',
 }
 
 export const getSubmissionStatusName = (status: SUBMISSION_STATUS_ENUM) => {
   switch (status) {
     case SUBMISSION_STATUS_ENUM.APPROVED:
-      return 'Diterima'
+      return 'Pengajuan Diterima'
     case SUBMISSION_STATUS_ENUM.REJECTED:
       return 'Ditolak'
     case SUBMISSION_STATUS_ENUM.SUBMITTED:
       return 'Proses Review'
     case SUBMISSION_STATUS_ENUM.NEW:
       return 'Draft'
+    case SUBMISSION_STATUS_ENUM.ELIGIBLE:
+      return 'Layak'
+    case SUBMISSION_STATUS_ENUM.NOT_ELIGIBLE:
+      return 'Tidak Layak'
   }
 
   return ''

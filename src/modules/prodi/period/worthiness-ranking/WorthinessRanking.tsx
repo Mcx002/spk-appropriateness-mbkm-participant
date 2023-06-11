@@ -3,14 +3,14 @@ import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 import { Autocomplete, TextField } from '@mui/material'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { FormEvent, SyntheticEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
 import InputComponent from '@/components/InputComponent'
 import MyPagination from '@/components/Pagination'
 import { TableTh } from '@/components/Table'
 import DashboardProdiLayout from '@/layouts/Dashboard-prodi-layout'
-import { useLazyGetDetailPeriodQuery, useLazyGetSpkResultQuery } from '@/services/period'
+import { useLazyGetDetailPeriodQuery, useLazyGetSpkResultQuery, usePostEligibleMutation } from '@/services/period'
 import { CommonError } from '@/types/common'
 import { PeriodDto, SpkResponse } from '@/types/period'
 import { SUBMISSION_STATUS_ENUM } from '@/types/submission'
@@ -25,11 +25,11 @@ const WorthinessRanking = () => {
   // services
   const [getSpkResult, { data: spkResult, error: spkResultError }] = useLazyGetSpkResultQuery()
   const [getDetailPeriod, { data: detailPeriod, error: detailPeriodError }] = useLazyGetDetailPeriodQuery()
+  const [postEligible, { isSuccess: postEligibleSuccess, isError: postEligibleError }] = usePostEligibleMutation()
 
   // State
   const [listSpk, setListSpk] = useState<SpkResponse[]>([])
   const [period, setPeriod] = useState<PeriodDto | null>(null)
-  const [keyword, setKeyword] = useState('')
   const [order, setOrder] = useState('')
   const [listSubmissionMeta, setListSubmissionMeta] = useState({
     limit: 10,
@@ -39,7 +39,16 @@ const WorthinessRanking = () => {
     pages: 1,
   })
   const [isRejectDialogOpen, setRejectDialogOpen] = useState(false)
-  const [rejectedReason, setRejectedReason] = useState('')
+  const [isEligibleDialogOpen, setEligibleDialogOpen] = useState(false)
+  const [form, setForm] = useState<{
+    submission_id: number
+    reason: string
+    file: File | null
+  }>({
+    submission_id: 0,
+    reason: '',
+    file: null,
+  })
 
   // Effects
   useEffect(() => {
@@ -76,6 +85,25 @@ const WorthinessRanking = () => {
   }, [spkResultError])
 
   useEffect(() => {
+    if (postEligibleError) {
+      toast.error('Gagal mengambil hasil spk')
+    }
+    if (postEligibleSuccess) {
+      resetForm()
+      getSpkResult({
+        periodId: parseInt(periodId),
+        params: {
+          limit: listSubmissionMeta.limit,
+          offset: listSubmissionMeta.offset,
+          order,
+        },
+      })
+      setRejectDialogOpen(false)
+      setEligibleDialogOpen(false)
+    }
+  }, [postEligibleError, postEligibleSuccess])
+
+  useEffect(() => {
     getSpkResult({
       periodId: parseInt(periodId),
       params: {
@@ -106,12 +134,29 @@ const WorthinessRanking = () => {
     })
   }
 
-  const handleFilterSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleProceedSubmission = (status: SUBMISSION_STATUS_ENUM) => {
+    const formData = new FormData()
+    formData.append('reason', form.reason)
+    formData.append('period_id', periodId)
+    formData.append('submission_id', form.submission_id.toString())
+    formData.append('action', status.toString())
+    if (form.file) {
+      formData.append('file', form.file)
+    }
+    if (status === SUBMISSION_STATUS_ENUM.ELIGIBLE && !form.file) {
+      toast.error('Tolong upload surat rekomendasi')
+      return
+    }
+
+    postEligible(formData)
   }
 
-  const handleProceedSubmission = (status: SUBMISSION_STATUS_ENUM) => {
-    console.log(status)
+  const resetForm = () => {
+    setForm({
+      submission_id: 0,
+      reason: '',
+      file: null,
+    })
   }
 
   return (
@@ -215,15 +260,36 @@ const WorthinessRanking = () => {
                           <td>{val.criteria[0].score}</td>
                           <td>{val.preference_value.toFixed(2)}</td>
                           <td className='flex justify-center gap-2'>
-                            <button
-                              className='rounded-2xl bg-[#FFC6BA] px-[8px] py-[5px] text-[#EB440F] active:bg-[#f5ae9f]'
-                              onClick={() => setRejectDialogOpen(true)}
-                            >
-                              Tidak Layak
-                            </button>
-                            <button className='rounded-2xl bg-[#C9FFD5] px-[8px] py-[5px] text-[#329C70] active:bg-[#adedbb]'>
-                              Layak
-                            </button>
+                            {val.status === SUBMISSION_STATUS_ENUM.APPROVED ? (
+                              <>
+                                <button
+                                  className='rounded-2xl bg-[#FFC6BA] px-[8px] py-[5px] text-[#EB440F] active:bg-[#f5ae9f]'
+                                  onClick={() => {
+                                    setForm({ ...form, submission_id: val.submission_id })
+                                    setRejectDialogOpen(true)
+                                  }}
+                                >
+                                  Tidak Layak
+                                </button>
+                                <button
+                                  className='rounded-2xl bg-[#C9FFD5] px-[8px] py-[5px] text-[#329C70] active:bg-[#adedbb]'
+                                  onClick={() => {
+                                    setForm({ ...form, submission_id: val.submission_id })
+                                    setEligibleDialogOpen(true)
+                                  }}
+                                >
+                                  Layak
+                                </button>
+                              </>
+                            ) : val.status === SUBMISSION_STATUS_ENUM.ELIGIBLE ? (
+                              <div className='w-fit rounded-2xl bg-gray-200 px-[8px] py-[5px] text-gray-500'>Layak</div>
+                            ) : val.status === SUBMISSION_STATUS_ENUM.NOT_ELIGIBLE ? (
+                              <div className='w-fit rounded-2xl bg-gray-200 px-[8px] py-[5px] text-gray-500'>
+                                Tidak Layak
+                              </div>
+                            ) : (
+                              ''
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -270,10 +336,10 @@ const WorthinessRanking = () => {
                   <Dialog.Description>Mohon masukan alasan penolakan</Dialog.Description>
                   <InputComponent
                     type='textarea'
-                    className={clsxm('w-[100%] rounded border-gray-300', false && ' !border-danger')}
-                    value={rejectedReason}
+                    className={clsxm('w-[100%] rounded border-gray-300')}
+                    value={form.reason}
                     onChange={(e) => {
-                      setRejectedReason(e.target.value)
+                      setForm({ ...form, reason: e.target.value })
                     }}
                   />
                   <div className='flex flex-row justify-end gap-3'>
@@ -286,7 +352,60 @@ const WorthinessRanking = () => {
                     <button
                       className='btn btn-primary'
                       onClick={() => {
-                        handleProceedSubmission(SUBMISSION_STATUS_ENUM.REJECTED)
+                        handleProceedSubmission(SUBMISSION_STATUS_ENUM.NOT_ELIGIBLE)
+                      }}
+                    >
+                      Kirim
+                    </button>
+                  </div>
+                </div>
+              </Dialog.Panel>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+
+      <Dialog
+        open={isEligibleDialogOpen}
+        onClose={() => {
+          setEligibleDialogOpen(false)
+        }}
+      >
+        <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
+          <div
+            className='fixed inset-0 bg-black/30'
+            aria-hidden='true'
+          />
+          <div className='fixed inset-0 overflow-y-auto'>
+            <div className='flex min-h-full items-center justify-center p-4'>
+              <Dialog.Panel className='mx-auto flex w-[530px] flex-col items-center gap-[26px] rounded bg-white p-7 px-[54px]'>
+                <Dialog.Title className='text-center text-2xl font-semibold'>Unggah Surat Rekomendasi?</Dialog.Title>
+                <div className='grid w-[100%] grid-cols-1 gap-3'>
+                  <InputComponent
+                    type='file'
+                    required
+                    id='transcript'
+                    placeholder='Format file .pdf'
+                    onChange={(event) => {
+                      const e = event as ChangeEvent<HTMLInputElement>
+                      if (e.target.files && e.target.files[0]) {
+                        const file = e.target.files[0]
+                        setForm({ ...form, file })
+                      }
+                    }}
+                    value={form.file?.name ?? ''}
+                  />
+                  <div className='flex flex-row justify-end gap-3'>
+                    <button
+                      className='btn btn-primary-light border'
+                      onClick={() => setEligibleDialogOpen(false)}
+                    >
+                      Batal
+                    </button>
+                    <button
+                      className='btn btn-primary'
+                      onClick={() => {
+                        handleProceedSubmission(SUBMISSION_STATUS_ENUM.ELIGIBLE)
                       }}
                     >
                       Kirim
