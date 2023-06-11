@@ -51,6 +51,13 @@ const api = createApi({
         url: `/submission-period/${id}`,
       }),
     }),
+    postEligible: builder.mutation<BaseResponse<null>, FormData>({
+      query: (formData) => ({
+        method: 'POST',
+        url: '/submission/eligible',
+        body: formData,
+      }),
+    }),
   }),
 })
 
@@ -61,6 +68,7 @@ export const {
   useUpdatePeriodMutation,
   useLazyGetSpkResultQuery,
   useLazyGetDetailPeriodQuery,
+  usePostEligibleMutation,
 } = api
 
 export default api

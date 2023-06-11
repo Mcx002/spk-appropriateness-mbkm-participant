@@ -1,5 +1,5 @@
 import { BaseData } from '@/types/common'
-import { IdName } from '@/types/submission'
+import { IdName, SUBMISSION_STATUS_ENUM } from '@/types/submission'
 
 export interface PeriodDto extends BaseData {
   created_by: IdName
@@ -45,6 +45,7 @@ export type SpkCriteriaDto = {
 export interface SpkResponse {
   id: number
   period_id: number
+  submission_id: number
   nim: string
   name: string
   rank: number
@@ -55,6 +56,7 @@ export interface SpkResponse {
     name: string
   }
   processed_at: string
+  status: SUBMISSION_STATUS_ENUM
 }
 
 export interface GetSpkResultRequest {

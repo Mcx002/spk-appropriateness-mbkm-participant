@@ -25,6 +25,7 @@ const Dashboard: FC = () => {
   const [getSubmissions, { data: submissionsData }] = useLazyGetMySubmissionsQuery()
   const [submissions, setSubmissions] = useState<GetSubmissionResponse[]>([])
   const [dataCount, setDataCount] = useState(0)
+  const [order, setOrder] = useState('created_at|desc')
   const limit = 10
 
   const [listSubmissionMeta, setListSubmissionMeta] = useState<ListMeta>({
@@ -39,11 +40,21 @@ const Dashboard: FC = () => {
     getSubmissions({
       params: {
         limit: limit,
-        offset: 0,
-        order: 'created_at|desc',
+        offset: listSubmissionMeta.offset,
+        order: order,
       },
     })
   }, [])
+
+  useEffect(() => {
+    getSubmissions({
+      params: {
+        limit: limit,
+        offset: listSubmissionMeta.offset,
+        order: order,
+      },
+    })
+  }, [order])
 
   useUpdateEffect(() => {
     if (submissionsData) {
@@ -96,14 +107,14 @@ const Dashboard: FC = () => {
                         <TableTh>No.</TableTh>
                         <TableTh
                           onClick={(e, order) => {
-                            console.log(order)
+                            setOrder(`created_at|${order}`)
                           }}
                         >
                           Tanggal Pengajuan
                         </TableTh>
                         <TableTh
                           onClick={(e, order) => {
-                            console.log(order)
+                            setOrder(`semester|${order}`)
                           }}
                         >
                           Semester
