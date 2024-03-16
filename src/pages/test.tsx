@@ -3,12 +3,12 @@ import { DateRange, RangeKeyDict } from 'react-date-range'
 import clsxm from '@/utils/clsxm'
 
 const Page = () => {
-  const selectionRange = {
+  const _selectionRange = {
     startDate: new Date(),
     endDate: new Date(),
     key: 'selection',
   }
-  const handleSelect = (ranges: RangeKeyDict) => {
+  const _handleSelect = (ranges: RangeKeyDict) => {
     console.log(ranges)
   }
   return (

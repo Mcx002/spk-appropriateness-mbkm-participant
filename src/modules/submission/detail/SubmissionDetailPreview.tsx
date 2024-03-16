@@ -9,11 +9,11 @@ type Props = {
   data: GetDetailSubmissionResponse
 }
 const SubmissionDetailPreview: FC<Props> = ({ data }) => {
-  const [frs, setFrs] = useState({
+  const [_frs, setFrs] = useState({
     filename: '',
     url: '',
   })
-  const [transcript, setTrancript] = useState({
+  const [_transcript, setTrancript] = useState({
     filename: '',
     url: '',
   })
@@ -24,7 +24,7 @@ const SubmissionDetailPreview: FC<Props> = ({ data }) => {
       // isLoading: isGetMyDocumentLoading,
       // isError: isGetMyDocumentError,
       data: dataMyDocuments,
-      error: errorMyDocuments,
+      error: _errorMyDocuments,
     },
   ] = useLazyGetMyDocumentsQuery()
   useEffect(() => {
@@ -51,14 +51,11 @@ const SubmissionDetailPreview: FC<Props> = ({ data }) => {
         <span className='title font-semibold'>NIM</span>
         <span className='value col-span-2'>{data.detail.student_id}</span>
         <span className='title font-semibold'>Nama Lengkap</span>
-        {/* TODO: Change created by name with user profile name*/}
         <span className='value col-span-2'>{data.detail.created_by.name}</span>
         <span className='title font-semibold'>Email Widyatama</span>
-        {/* TODO: Change muchlish.choeruddin@widyatama.ac.id with dynamic data*/}
-        <span className='value col-span-2'>muchlish.choeruddin@widyatama.ac.id</span>
+        <span className='value col-span-2'>{data.detail.student.email}</span>
         <span className='title font-semibold'>Program Studi</span>
-        {/* TODO: Change Teknik Informatika with profile prodi*/}
-        <span className='value col-span-2'>Teknik Informatika</span>
+        <span className='value col-span-2'>{data.detail.student.studyProgram.name}</span>
         <span className='title font-semibold'>Periode Masuk</span>
         <span className='value col-span-2'>{data.detail.entry_period}</span>
         <span className='title font-semibold'>Kelas</span>

@@ -41,7 +41,7 @@ const Register: NextPage = () => {
     {
       isFetching: listFacultyIsFetching,
       isSuccess: listFacultyIsSuccess,
-      isError: listFacultyIsError,
+      isError: _listFacultyIsError,
       data: listFaculty,
     },
   ] = useLazyListFacultyQuery()
@@ -51,18 +51,18 @@ const Register: NextPage = () => {
     {
       isFetching: listProgramStudyIsFetching,
       isSuccess: listProgramStudyIsSuccess,
-      isError: listProgramStudyIsError,
+      isError: _listProgramStudyIsError,
       data: listProgramStudy,
     },
   ] = useLazyListProgramStudyQuery()
 
-  const [selectedFaculty, setSelectedFaculty] = useState<Faculty | undefined>(undefined)
-  const [selectedProgramStudy, setSelectedProgramStudy] = useState<Faculty | undefined>(undefined)
+  const [_selectedFaculty, setSelectedFaculty] = useState<Faculty | undefined>(undefined)
+  const [_selectedProgramStudy, setSelectedProgramStudy] = useState<Faculty | undefined>(undefined)
 
   const [
     register,
     {
-      isLoading: registerIsLoading,
+      isLoading: _registerIsLoading,
       isSuccess: registerIsSuccess,
       isError: registerIsError,
       error: registerError,
