@@ -9,11 +9,11 @@ type Props = {
   data: GetDetailSubmissionResponse
 }
 const SubmissionDetailPreview: FC<Props> = ({ data }) => {
-  const [frs, setFrs] = useState({
+  const [_frs, setFrs] = useState({
     filename: '',
     url: '',
   })
-  const [transcript, setTrancript] = useState({
+  const [_transcript, setTrancript] = useState({
     filename: '',
     url: '',
   })
@@ -24,7 +24,7 @@ const SubmissionDetailPreview: FC<Props> = ({ data }) => {
       // isLoading: isGetMyDocumentLoading,
       // isError: isGetMyDocumentError,
       data: dataMyDocuments,
-      error: errorMyDocuments,
+      error: _errorMyDocuments,
     },
   ] = useLazyGetMyDocumentsQuery()
   useEffect(() => {

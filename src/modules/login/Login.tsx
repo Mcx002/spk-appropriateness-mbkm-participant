@@ -86,7 +86,7 @@ const Login: NextPage = () => {
     }
   }, [loginIsError, loginIsSuccess])
   return (
-    <div className='grid grid-cols-12 gap-5 pt-4 lg:pt-28'>
+    <div className='mt-[12vh] grid grid-cols-12 gap-5 pt-4 lg:mt-0 lg:pt-28'>
       <Head>
         <title>Login</title>
       </Head>
